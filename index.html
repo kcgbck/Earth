@@ -632,7 +632,7 @@
             camera.position.z = THREE.MathUtils.clamp(initialCamZ * factor, 6.2, 25);
           }
 
-          // 2. ★ 두 손가락 반대방향 스와이프 (Twist/Roll 360도 회전)
+          // 2. ★ 두 손가락 반대방향 스와이프 (Twist/Roll 360도 회전 - 방향 반대로 반영)
           const currentAngle = Math.atan2(t2.clientY - t1.clientY, t2.clientX - t1.clientX);
           let deltaAngle = currentAngle - lastPinchAngle;
 
@@ -641,8 +641,8 @@
 
           if (Math.abs(deltaAngle) > 0.002) {
             const qZ = new THREE.Quaternion();
-            // 화면 중심 바라보는 Z축 기준 회전
-            qZ.setFromAxisAngle(new THREE.Vector3(0, 0, 1), deltaAngle);
+            // 화면 중심 바라보는 Z축 기준 회전 (반대 방향 -deltaAngle 적용)
+            qZ.setFromAxisAngle(new THREE.Vector3(0, 0, 1), -deltaAngle);
             globeGroup.quaternion.premultiply(qZ);
             lastPinchAngle = currentAngle;
           }
