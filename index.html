@@ -324,75 +324,369 @@
 
     // ==========================================
     // 1. DATA DEFINITIONS & GLOBAL COUNTRY MAP
+    // 전 세계 대륙별 모든 주요 국가 영토 위경도 및 대표 명소 수록
     // ==========================================
     const GLOBAL_COUNTRY_MAP = {
-      "ATA": { countryName: "남극 (Antarctica)", capital: "연구 기지 (Research Stations)", flag: "🇦🇶", continent: "남극 대륙", lat: -82.8628, lon: 135.0000, description: "지구 최남단에 위치한 거대한 얼음 대륙으로 각국의 과학 연구 기지들이 운영되고 있습니다." },
-      "NER": { countryName: "니제르 (Niger)", capital: "니아메 (Niamey)", flag: "🇳🇪", continent: "아프리카", lat: 17.6078, lon: 8.0817, description: "서아프리카 내륙에 위치한 사하라 사막의 넓은 영토 국가입니다." },
-      "MLI": { countryName: "말리 (Mali)", capital: "바마코 (Bamako)", flag: "🇲🇱", continent: "아프리카", lat: 17.5707, lon: -3.9962, description: "서아프리카에 위치한 고대 고요한 대륙 국가입니다." },
-      "TCD": { countryName: "차드 (Chad)", capital: "은자메나 (N'Djamena)", flag: "🇹🇩", continent: "아프리카", lat: 15.4542, lon: 18.7322, description: "중앙아프리카에 위치한 사막과 사바나 지대의 내륙국입니다." },
-      "SDN": { countryName: "수단 (Sudan)", capital: "카르툼 (Khartoum)", flag: "🇸🇩", continent: "아프리카", lat: 12.8628, lon: 30.2176, description: "나일 강이 흐르는 북동아프리카 국가입니다." },
-      "SSD": { countryName: "남수단 (South Sudan)", capital: "주바 (Juba)", flag: "🇸🇸", continent: "아프리카", lat: 6.8769, lon: 31.3069, description: "동아프리카 내륙에 위치한 신생 독립국입니다." },
-      "ISL": { countryName: "아이슬란드 (Iceland)", capital: "레이캬비크 (Reykjavik)", flag: "🇮🇸", continent: "유럽", lat: 64.9631, lon: -19.0208, description: "화산과 빙하, 온천으로 유명한 북유럽의 아름다운 섬나라입니다." },
-      "GRL": { countryName: "그린란드 (Greenland)", capital: "누크 (Nuuk)", flag: "🇬🇱", continent: "북아메리카", lat: 71.7069, lon: -42.6043, description: "지구상에서 가장 큰 섬으로 빙하가 펼쳐진 지역입니다." },
-      "NOR": { countryName: "노르웨이 (Norway)", capital: "오슬로 (Oslo)", flag: "🇳🇴", continent: "유럽", lat: 60.4720, lon: 8.4689, description: "웅장한 피오르 해안선과 오로라의 나라입니다." },
-      "SWE": { countryName: "스웨덴 (Sweden)", capital: "스톡홀름 (Stockholm)", flag: "🇸🇪", continent: "유럽", lat: 60.1281, lon: 18.6435, description: "아름다운 호수와 숲, 혁신적인 복지로 알려진 북유럽 국가입니다." },
-      "FIN": { countryName: "핀란드 (Finland)", capital: "헬싱키 (Helsinki)", flag: "🇫🇮", continent: "유럽", lat: 61.9241, lon: 25.7482, description: "산타클로스의 고향이자 자작나무 숲과 호수의 나라입니다." },
-      "DNK": { countryName: "덴마크 (Denmark)", capital: "코펜하겐 (Copenhagen)", flag: "🇩🇰", continent: "유럽", lat: 56.2639, lon: 9.5018, description: "동화 작가 안데르센의 고향이자 유틀란트 반도의 북유럽 국가입니다." },
-      "POL": { countryName: "폴란드 (Poland)", capital: "바르샤바 (Warsaw)", flag: "🇵🇱", continent: "유럽", lat: 51.9194, lon: 19.1451, description: "쇼팽의 음악과 풍부한 역사를 지닌 동유럽 국가입니다." },
-      "NLD": { countryName: "네덜란드 (Netherlands)", capital: "암스테르담 (Amsterdam)", flag: "🇳🇱", continent: "유럽", lat: 52.1326, lon: 5.2913, description: "풍차와 튤립, 운하 도시 암스테르담의 서유럽 국가입니다." },
-      "BEL": { countryName: "벨기에 (Belgium)", capital: "브뤼셀 (Brussels)", flag: "🇧🇪", continent: "유럽", lat: 50.5039, lon: 4.4699, description: "EU 본부가 위치한 유럽의 중심 국가입니다." },
-      "CHE": { countryName: "스위스 (Switzerland)", capital: "베른 (Bern)", flag: "🇨🇭", continent: "유럽", lat: 46.8181, lon: 8.2275, description: "알프스 산맥과 평화로운 호수가 펼쳐진 영세중립국입니다." },
-      "AUT": { countryName: "오스트리아 (Austria)", capital: "빈 (Vienna)", flag: "🇦🇹", continent: "유럽", lat: 47.5162, lon: 14.5501, description: "클래식 음악의 거장들이 탄생한 예술의 나라입니다." },
-      "CZE": { countryName: "체코 (Czech Republic)", capital: "프라하 (Prague)", flag: "🇨🇿", continent: "유럽", lat: 49.8175, lon: 15.4730, description: "중세 고성 건축물과 아름다운 야경의 동유럽 국가입니다." },
-      "HUN": { countryName: "헝가리 (Hungary)", capital: "부다페스트 (Budapest)", flag: "🇭🇺", continent: "유럽", lat: 47.1625, lon: 19.5033, description: "다뉴브 강의 야경과 온천 문화가 발달한 중앙유럽 국가입니다." },
-      "GRC": { countryName: "그리스 (Greece)", capital: "아테네 (Athens)", flag: "🇬🇷", continent: "유럽", lat: 39.0742, lon: 21.8243, description: "서양 문명의 발상지이자 고대 신화의 나라입니다." },
-      "TUR": { countryName: "튀르키예 (Turkey)", capital: "앙카라 (Ankara)", flag: "🇹🇷", continent: "유라시아", lat: 38.9637, lon: 35.2433, description: "동양과 서양이 만나는 유서 깊은 가교 국가입니다." },
-      "PRT": { countryName: "포르투갈 (Portugal)", capital: "리스본 (Lisbon)", flag: "🇵🇹", continent: "유럽", lat: 39.3998, lon: -8.2244, description: "이베리아 반도 서쪽에 위치한 해양 탐험의 나라입니다." },
-      "IRL": { countryName: "아일랜드 (Ireland)", capital: "더블린 (Dublin)", flag: "🇮🇪", continent: "유럽", lat: 53.4129, lon: -8.2439, description: "초록빛 초원과 독특한 켈트 문화의 섬나라입니다." },
-      "UKR": { countryName: "우크라이나 (Ukraine)", capital: "키이우 (Kyiv)", flag: "🇺🇦", continent: "유럽", lat: 48.3794, lon: 31.1655, description: "동유럽의 광활한 곡창 지대를 가진 나라입니다." },
-      "ROU": { countryName: "루마니아 (Romania)", capital: "부쿠레슈티 (Bucharest)", flag: "🇷🇴", continent: "유럽", lat: 45.9431, lon: 24.9667, description: "카르파티아 산맥과 트란실바니아로 유명합니다." },
-      "BGR": { countryName: "불가리아 (Bulgaria)", capital: "소피아 (Sofia)", flag: "🇧🇬", continent: "유럽", lat: 42.7339, lon: 25.4858, description: "장미 오일과 발칸 산맥의 아름다운 국가입니다." },
-      "SVK": { countryName: "슬로바키아 (Slovakia)", capital: "브라티슬라바 (Bratislava)", flag: "🇸🇰", continent: "유럽", lat: 48.6690, lon: 19.6990, description: "타트라 산맥과 고성 유적이 아름다운 내륙국입니다." },
-      "HRV": { countryName: "크로아티아 (Croatia)", capital: "자그레브 (Zagreb)", flag: "🇭🇷", continent: "유럽", lat: 45.1000, lon: 15.2000, description: "아드리아 해의 보석 두브로브니크의 나라입니다." },
-      "MNG": { countryName: "몽골 (Mongolia)", capital: "울란바토르 (Ulaanbaatar)", flag: "🇲🇳", continent: "아시아", lat: 46.8625, lon: 103.8467, description: "고비 사막과 대초원 유목 문화의 국가입니다." },
-      "THA": { countryName: "태국 (Thailand)", capital: "방콕 (Bangkok)", flag: "🇹🇭", continent: "아시아", lat: 15.8700, lon: 100.9925, description: "불교 사원과 미식, 해변 휴양지의 나라입니다." },
-      "IDN": { countryName: "인도네시아 (Indonesia)", capital: "자카르타 (Jakarta)", flag: "🇮🇩", continent: "아시아", lat: -0.7893, lon: 113.9213, description: "세계 최대의 도서 국가로 발리와 수마트라가 유명합니다." },
-      "PHL": { countryName: "필리핀 (Philippines)", capital: "마닐라 (Manila)", flag: "🇵🇭", continent: "아시아", lat: 12.8797, lon: 121.7740, description: "7,000여 개의 섬으로 구성된 서태평양 국가입니다." },
-      "MYS": { countryName: "말레이시아 (Malaysia)", capital: "쿠알라룸푸르 (Kuala Lumpur)", flag: "🇲🇾", continent: "아시아", lat: 4.2105, lon: 101.9758, description: "페트로나스 타워와 다문화가 공존하는 국가입니다." },
-      "KHM": { countryName: "캄보디아 (Cambodia)", capital: "프놈펜 (Phnom Penh)", flag: "🇰🇭", continent: "아시아", lat: 12.5657, lon: 104.9910, description: "앙코르와트 문화유산을 품고 있는 나라입니다." },
-      "LAO": { countryName: "라오스 (Laos)", capital: "비엔티안 (Vientiane)", flag: "🇱🇦", continent: "아시아", lat: 19.8563, lon: 102.4955, description: "메콩 강이 흐르는 순수한 동남아시아 내륙국입니다." },
-      "MMR": { countryName: "미얀마 (Myanmar)", capital: "네피도 (Naypyidaw)", flag: "🇲🇲", continent: "아시아", lat: 21.9162, lon: 95.9560, description: "황금 파고다 사원과 바간 유적의 나라입니다." },
-      "LKA": { countryName: "스리랑카 (Sri Lanka)", capital: "스리자야와르데네푸라코테 (Sri Jayawardenepura Kotte)", flag: "🇱🇰", continent: "아시아", lat: 7.8730, lon: 80.7717, description: "실론 티와 불교 유적이 풍부한 인도양 섬나라입니다." },
-      "PAK": { countryName: "파키스탄 (Pakistan)", capital: "이스라마바드 (Islamabad)", flag: "🇵🇰", continent: "아시아", lat: 30.3753, lon: 69.3451, description: "K2 등 웅장한 히말라야 산봉우리들의 나라입니다." },
-      "BGD": { countryName: "방글라데시 (Bangladesh)", capital: "다카 (Dhaka)", flag: "🇧🇩", continent: "아시아", lat: 23.6850, lon: 90.3563, description: "갠지스 삼각주 지형의 남아시아 국가입니다." },
-      "IRN": { countryName: "이란 (Iran)", capital: "테헤란 (Tehran)", flag: "🇮🇷", continent: "중동", lat: 32.4279, lon: 53.6880, description: "고대 페르시아 문명의 역사 유적을 가진 중동국가입니다." },
-      "IRQ": { countryName: "이라크 (Iraq)", capital: "바그다드 (Baghdad)", flag: "🇮🇶", continent: "중동", lat: 33.2232, lon: 43.6793, description: "메소포타미아 문명 발상지의 티그리스 강 국가입니다." },
-      "ISR": { countryName: "이스라엘 (Israel)", capital: "예루살렘 (Jerusalem)", flag: "🇮🇱", continent: "중동", lat: 31.0461, lon: 34.8516, description: "3대 종교의 성지 예루살렘의 국가입니다." },
-      "ARE": { countryName: "아랍에미리트 (United Arab Emirates)", capital: "아부다비 (Abu Dhabi)", flag: "🇦🇪", continent: "중동", lat: 23.4240, lon: 53.8478, description: "두바이 등 초현대적 도시들이 자리한 나라입니다." },
-      "QAT": { countryName: "카타르 (Qatar)", capital: "도하 (Doha)", flag: "🇶🇦", continent: "중동", lat: 25.3548, lon: 51.1838, description: "페르시아 만의 자원이 풍부한 반도 국가입니다." },
-      "JOR": { countryName: "요르단 (Jordan)", capital: "암만 (Amman)", flag: "🇯🇴", continent: "중동", lat: 30.5852, lon: 36.2384, description: "페트라 유적과 사해로 유명한 나라입니다." },
-      "MAR": { countryName: "모로코 (Morocco)", capital: "라바트 (Rabat)", flag: "🇲🇦", continent: "아프리카", lat: 31.7917, lon: -7.0926, description: "카사블랑카와 사하라 관문의 북아프리카 국가입니다." },
-      "DZA": { countryName: "알제리 (Algeria)", capital: "알제 (Algiers)", flag: "🇩🇿", continent: "아프리카", lat: 28.0339, lon: 1.6596, description: "아프리카 대륙에서 면적이 가장 넓은 국가입니다." },
-      "TUN": { countryName: "튀니지 (Tunisia)", capital: "튀니스 (Tunis)", flag: "🇹🇳", continent: "아프리카", lat: 33.8869, lon: 9.5374, description: "고대 카르타고 유적의 지중해 국가입니다." },
-      "KEN": { countryName: "케냐 (Kenya)", capital: "나이로비 (Nairobi)", flag: "🇰🇪", continent: "아프리카", lat: -1.2921, lon: 36.8219, description: "마사이마라 사파리로 유명한 동아프리카 대표국입니다." },
-      "TZA": { countryName: "탄자니아 (Tanzania)", capital: "도도마 (Dodoma)", flag: "🇹🇿", continent: "아프리카", lat: -6.3690, lon: 34.8888, description: "킬리만자로산과 세렝게티 초원의 나라입니다." },
-      "ETH": { countryName: "에티오피아 (Ethiopia)", capital: "아디스아바바 (Addis Ababa)", flag: "🇪🇹", continent: "아프리카", lat: 9.1450, lon: 40.4897, description: "커피의 발상지이자 역사를 자랑하는 나라입니다." },
-      "NGA": { countryName: "나이지리아 (Nigeria)", capital: "아부자 (Abuja)", flag: "🇳🇬", continent: "아프리카", lat: 9.0820, lon: 8.6753, description: "아프리카 최대의 인구와 경제 규모를 지닌 국가입니다." },
-      "PER": { countryName: "페루 (Peru)", capital: "리마 (Lima)", flag: "🇵🇪", continent: "남아메리카", lat: -9.1899, lon: -75.0151, description: "잉카 문명 마추픽추와 안데스의 나라입니다." },
-      "CHL": { countryName: "칠레 (Chile)", capital: "산티아고 (Santiago)", flag: "🇨🇱", continent: "남아메리카", lat: -35.6751, lon: -71.5430, description: "남북으로 4,300km 이상 길게 늘어선 해안 국가입니다." },
-      "COL": { countryName: "콜롬비아 (Colombia)", capital: "보고타 (Bogota)", flag: "🇨🇴", continent: "남아메리카", lat: 4.5709, lon: -74.2973, description: "최상급 커피 생산과 카리브 해안의 나라입니다." },
-      "ECU": { countryName: "에콰도르 (Ecuador)", capital: "키토 (Quito)", flag: "🇪🇨", continent: "남아메리카", lat: -1.8312, lon: -78.1834, description: "적도선이 관통하며 갈라파고스를 품은 나라입니다." },
-      "BOL": { countryName: "볼리비아 (Bolivia)", capital: "수크레 (Sucre)", flag: "🇧🇴", continent: "남아메리카", lat: -16.2902, lon: -63.5887, description: "세계 최대 우유니 소금 사막의 나라입니다." },
-      "NZL": { countryName: "뉴질랜드 (New Zealand)", capital: "웰링턴 (Wellington)", flag: "🇳🇿", continent: "오세아니아", lat: -40.9006, lon: 174.8860, description: "대자연과 마오리 문화의 오세아니아 국가입니다." },
-      "KAZ": { countryName: "카자흐스탄 (Kazakhstan)", capital: "아스타나 (Astana)", flag: "🇰🇿", continent: "중앙아시아", lat: 48.0196, lon: 66.9237, description: "세계 최대의 내륙 스텝 국가입니다." },
-      "UZB": { countryName: "우즈베키스탄 (Uzbekistan)", capital: "타슈켄트 (Tashkent)", flag: "🇺🇿", continent: "중앙아시아", lat: 41.3774, lon: 64.5852, description: "실크로드 거점 도시 사마르칸트의 나라입니다." },
-      "GEO": { countryName: "조지아 (Georgia)", capital: "트빌리시 (Tbilisi)", flag: "🇬🇪", continent: "유라시아", lat: 42.3154, lon: 43.3569, description: "코카서스 산맥과 와인 역사의 나라입니다." },
-      "EST": { countryName: "에스토니아 (Estonia)", capital: "탈린 (Tallinn)", flag: "🇪🇪", continent: "유럽", lat: 58.5953, lon: 25.0136, description: "발트 3국 최북단 IT 강국입니다." },
-      "LVA": { countryName: "라트비아 (Latvia)", capital: "리가 (Riga)", flag: "🇱🇻", continent: "유럽", lat: 56.8796, lon: 24.6032, description: "발트 해 연안 아르누보 건축의 나라입니다." },
-      "LTU": { countryName: "리투아니아 (Lithuania)", capital: "빌뉴스 (Vilnius)", flag: "🇱🇹", continent: "유럽", lat: 55.1694, lon: 23.8813, description: "발트 3국의 유서 깊은 국가입니다." },
-      "CUB": { countryName: "쿠바 (Cuba)", capital: "아바나 (Havana)", flag: "🇨🇺", continent: "북아메리카", lat: 21.5218, lon: -77.7812, description: "카리브해의 올드 아바나 문화 나라입니다." },
-      "PRK": { countryName: "북한 (North Korea)", capital: "평양 (Pyongyang)", flag: "🇰🇵", continent: "아시아", lat: 40.3399, lon: 127.5101, description: "한반도 북부 지역입니다." },
-      "TWN": { countryName: "대만 (Taiwan)", capital: "타이베이 (Taipei)", flag: "🇹🇼", continent: "아시아", lat: 23.6978, lon: 120.9605, description: "동아시아 IT 및 미식의 섬나라입니다." }
+      "ATA": { 
+        countryName: "남극 (Antarctica)", capital: "연구 기지 (Research Stations)", flag: "🇦🇶", continent: "남극 대륙", lat: -82.8628, lon: 135.0000, 
+        description: "지구 최남단에 위치한 거대한 얼음 대륙으로 각국의 과학 연구 기지들이 운영되고 있습니다.",
+        landmarks: [
+          { name: "남극점", type: "📍 지리적 최남단", desc: "지평선 전체가 빙하로 뒤덮인 지구의 남극점입니다." },
+          { name: "세종과학기지 & 장보고기지", type: "🔬 연구 기지", desc: "대한민국이 운영하는 남극의 첨단 과학 연구 기지입니다." },
+          { name: "남극 빙상", type: "🧊 대륙 빙하", desc: "지구 민물(담수)의 약 70%가 얼어있는 세계 최대 빙상입니다." },
+          { name: "황제펭귄 서식지", type: "🐧 야생 생태 구역", desc: "남극 해안가를 따라 형성된 황제펭귄들의 번식지입니다." },
+          { name: "에러버스 화산", type: "🌋 활화산", desc: "지구 최남단에 위치한 신비로운 활화산입니다." }
+        ]
+      },
+      "RUS": { 
+        countryName: "러시아 (Russia)", capital: "모스크바 (Moscow)", flag: "🇷🇺", continent: "유라시아", lat: 55.7558, lon: 37.6173, 
+        description: "지구 표면 육지 면적의 약 1/8을 차지하는 세계 최대 영토(대한민국의 약 170배) 대륙 국가입니다.",
+        landmarks: [
+          { name: "붉은 광장 & 성 바실리 대성당", type: "🏛️ 명소", desc: "동화 속 알록달록한 돔으로 유명한 모스크바의 상징입니다." },
+          { name: "바이칼 호수", type: "🌊 세계 최심 담수호", desc: "세계에서 가장 깊고 방대한 수량을 지닌 깨끗한 민물호수입니다." },
+          { name: "크렘린 궁전", type: "🏛️ 역사 유적", desc: "모스크바 중심부에 위치한 유서 깊은 요새이자 요람입니다." },
+          { name: "에르미타주 박물관", type: "🎨 미술관", desc: "상트페테르부르크에 위치한 세계 3대 박물관 중 하나입니다." },
+          { name: "우랄 산맥", type: "🏔️ 대륙 경계 산맥", desc: "유럽과 아시아 대륙을 가로지르는 광대한 자연 산맥입니다." },
+          { name: "볼가 강", type: "🌊 강", desc: "유럽 대륙에서 가장 긴 러시아의 어머니 강입니다." },
+          { name: "시베리아 횡단철도", type: "🚂 대륙 철도", desc: "모스크바와 블라디보스토크를 잇는 9,289km 대륙 철도입니다." },
+          { name: "캄차카 화산 지대", type: "🌋 자연유산", desc: "수많은 활화산과 간헐천이 어우러진 유네스코 자연유산입니다." }
+        ]
+      },
+      "CAN": { 
+        countryName: "캐나다 (Canada)", capital: "오타와 (Ottawa)", flag: "🇨🇦", continent: "북아메리카", lat: 45.4215, lon: -75.6972, 
+        description: "세계 면적 2위(대한민국의 약 100배) 국가로 웅장한 국립공원과 빙하, 호수가 펼쳐진 청정 대자연의 나라입니다.",
+        landmarks: [
+          { name: "나이아가라 폭포", type: "🌊 대폭포", desc: "미국 국경에 접한 세계 3대 웅장한 거대 폭포입니다." },
+          { name: "캐나디안 로키 & 밴프 국립공원", type: "🏔️ 국립공원", desc: "에메랄드빛 레이크 루이스와 만년설 연봉이 비경을 이룹니다." },
+          { name: "CN 타워", type: "🏙️ 랜드마크", desc: "토론토 스카이라인을 상징하는 초고층 전망 타워입니다." },
+          { name: "퀘벡 역사 지구", type: "🏛️ 유네스코 유산", desc: "북미의 작은 프랑스라 불리는 고풍스러운 옛 구시가지입니다." },
+          { name: "모레인 호수", type: "🌊 명소", desc: "빙하가 녹아 형성된 신비로운 터키석 빛깔의 호수입니다." },
+          { name: "세인트로렌스 강", type: "🌊 대강", desc: "오대호와 대서양을 잇는 캐나다 동부의 대강입니다." },
+          { name: "부차트 가든", type: "💐 정원", desc: "빅토리아 섬에 위치한 세계적인 정원입니다." }
+        ]
+      },
+      "CHN": { 
+        countryName: "중국 (China)", capital: "베이징 (Beijing)", flag: "🇨🇳", continent: "아시아", lat: 39.9042, lon: 116.4074, 
+        description: "동아시아의 광활한 대륙 영토(대한민국의 약 96배)와 수천 년 유구한 역사를 간직한 국가입니다.",
+        landmarks: [
+          { name: "만리장성", type: "🏛️ 세계 7대 기적", desc: "대륙을 가로지르는 인류 역사상 최대 규모의 방어 성벽 유적입니다." },
+          { name: "자금성 (고궁)", type: "🏛️ 왕궁", desc: "명·청 시대 황제들이 거주했던 세계 최대 규모의 궁전 건축군입니다." },
+          { name: "양쯔강 (장강)", type: "🌊 아시아 최장 강", desc: "아시아에서 가장 길고 수량이 풍부한 거대 대강(6,300km)입니다." },
+          { name: "진시황 병마용", type: "🏛️ 역사 유적", desc: "시안에 위치한 고대 진나라 군사 형태의 흙인형 유적입니다." },
+          { name: "황산", type: "🏔️ 명산", desc: "운해와 기암괴석, 아름다운 소나무 풍경으로 이름난 명산입니다." },
+          { name: "구채구", type: "🌊 자연보호구역", desc: "투명하고 오색빛깔을 띠는 호수와 폭포가 장관을 이루는 구역입니다." },
+          { name: "상하이 와이탄", type: "🏙️ 야경 명소", desc: "황푸 강변을 따라 펼쳐진 동서양 건축과 현대 야경의 상징입니다." },
+          { name: "계림 산수", type: "🏞️ 명승지", desc: "산수갑천나라 불리는 카르스트 지형의 아름다운 강산 풍경입니다." }
+        ]
+      },
+      "USA": { 
+        countryName: "미국 (United States)", capital: "워싱턴 D.C. (Washington D.C.)", flag: "🇺🇸", continent: "북아메리카", lat: 38.9072, lon: -77.0369, 
+        description: "북아메리카 대륙의 넓은 영토(대한민국의 약 98배)에 위치한 세계 최대 경제 및 문화 영향력의 연방 국가입니다.",
+        landmarks: [
+          { name: "자유의 여신상", type: "🗽 상징 랜드마크", desc: "뉴욕 리버티 섬에 위치한 자유와 민주주의의 대표 상징물입니다." },
+          { name: "그랜드 캐니언", type: "🏞️ 대협곡", desc: "콜로라도 강이 수백만 년에 걸쳐 깎아 만든 웅장한 세계 대협곡입니다." },
+          { name: "옐로스톤 국립공원", type: "🌋 국립공원", desc: "세계 최초의 국립공원으로 간헐천과 열천 지대가 장관입니다." },
+          { name: "나이아가라 폭포", type: "🌊 폭포", desc: "미국과 캐나다 국경에 위치한 거대한 폭포입니다." },
+          { name: "로키 산맥", type: "🏔️ 광역 산맥", desc: "북미 대륙을 남북으로 가로지르는 웅장한 거대 산맥입니다." },
+          { name: "타임스퀘어", type: "🏙️ 명소", desc: "화려한 전광판과 전 세계 관광객이 모이는 뉴욕의 중심지입니다." },
+          { name: "요세미티 국립공원", type: "🏔️ 자연 유산", desc: "거대한 화강암 절벽과 세쿼이아 거목 숲이 펼쳐진 공원입니다." },
+          { name: "미시시피 강", type: "🌊 강", desc: "북미 대륙에서 가장 긴 대표적인 대강입니다." }
+        ]
+      },
+      "BRA": { 
+        countryName: "브라질 (Brazil)", capital: "브라질리아 (Brasília)", flag: "🇧🇷", continent: "남아메리카", lat: -15.7975, lon: -47.8919, 
+        description: "남아메리카 대륙의 절반가량(대한민국의 약 85배)을 차지하는 축구와 삼바, 대자연의 열정적인 국가입니다.",
+        landmarks: [
+          { name: "아마존 열대우림 & 아마존강", type: "🌳 지구의 허파", desc: "지구 산소의 상당량을 공급하는 세계 최대 밀림 및 대강입니다." },
+          { name: "이구아수 폭포", type: "🌊 폭포군", desc: "270여 개의 폭포가 연이어 장관을 이루는 세계 최대 규모 폭포입니다." },
+          { name: "구원자 예수상 (코르코바두)", type: "🗿 세계 7대 기적", desc: "리우데자네이루 산꼭대기에서 도시를 굽어보는 거대 예수상입니다." },
+          { name: "코파카바나 해변", type: "🏖️ 해변", desc: "리우데자네이루의 상징적인 활기찬 활모양 해변입니다." },
+          { name: "판타나우 습지", type: "🐊 생태 구역", desc: "세계 최대 규모의 열대 습지이자 풍부한 야생동물의 천국입니다." },
+          { name: "렌소이스 마라냥세스 사막", type: "🏜️ 국립공원", desc: "하얀 모래사구 사이마다 우기 때 에메랄드빛 호수가 생기는 신비로운 곳입니다." }
+        ]
+      },
+      "AUS": { 
+        countryName: "호주 (Australia)", capital: "캔버라 (Canberra)", flag: "🇦🇺", continent: "오세아니아", lat: -35.2809, lon: 149.1300, 
+        description: "오세아니아 대륙 전체(대한민국의 약 77배)를 영토로 하며 청정 대자연과 고유 야생동물이 가득한 나라입니다.",
+        landmarks: [
+          { name: "시드니 오페라 하우스", type: "🏛️ 건축 랜드마크", desc: "돛 모양의 아름다운 지붕을 지닌 세계적인 공연장입니다." },
+          { name: "울루루 (에어즈록)", type: "🪨 거대 바위", desc: "호주 중심부 사막에 위치한 세계 최대의 단일 암석입니다." },
+          { name: "그레이트 배리어 리프", type: "🪸 산호초 지대", desc: "우주에서도 보이는 세계 최대의 거대한 산호초 지대입니다." },
+          { name: "블루마운틴 국립공원", type: "🏔️ 산맥", desc: "유칼립투스 숲에서 나오는 유채로 푸른빛을 띠는 국립공원입니다." },
+          { name: "그레이트 오션 로드", type: "🛣️ 드라이브 명소", desc: "12아포슬 바위와 기암괴석 해안 절벽이 펼쳐진 도로입니다." },
+          { name: "힐리어 핑크 호수", type: "🌊 핑크 호수", desc: "딸기우유 빛깔을 띠는 신비로운 분홍색 호수입니다." }
+        ]
+      },
+      "IND": { 
+        countryName: "인도 (India)", capital: "뉴델리 (New Delhi)", flag: "🇮🇳", continent: "아시아", lat: 28.6139, lon: 77.2090, 
+        description: "남아시아의 거대한 반도 국가(대한민국의 약 33배)로 다채로운 역사 문화 유산과 신앙의 나라입니다.",
+        landmarks: [
+          { name: "타지마할", type: "🏛️ 세계 7대 기적", desc: "샤 자한 황제가 왕비를 위해 세운 순백의 순백색 대리석 묘당입니다." },
+          { name: "갠지스 강", type: "🌊 성스러운 강", desc: "인도교 신앙의 중심이자 역사 문명의 발상지가 되는 대강입니다." },
+          { name: "암리차르 황금사원", type: "🕌 시크교 성지", desc: "순금으로 둘러싸여 호수 위에 떠 있는 듯한 사원입니다." },
+          { name: "자이푸르 하와마할", type: "🏛️ 역사 궁전", desc: "바람의 궁전이라 불리는 붉은 사암 궁전입니다." },
+          { name: "히말라야 산맥", type: "🏔️ 최고봉 지대", desc: "인도 북부 국경을 감싸는 웅장한 세계 지붕 산맥입니다." }
+        ]
+      },
+      "ARG": { 
+        countryName: "아르헨티나 (Argentina)", capital: "부에노스아이레스 (Buenos Aires)", flag: "🇦🇷", continent: "남아메리카", lat: -34.6037, lon: -58.3816, 
+        description: "남아메리카 남부에 길게 펼쳐진 영토(대한민국의 약 28배)로 탱고와 안데스, 파타고니아의 나라입니다.",
+        landmarks: [
+          { name: "페리토 모레노 빙하", type: "🧊 파타고니아 빙하", desc: "지금도 유기적으로 성장하고 굉음을 내며 무너지는 빙하입니다." },
+          { name: "이구아수 폭포", type: "🌊 폭포군", desc: "브라질 국경과 접한 악마의 목구멍이라 불리는 웅장한 폭포입니다." },
+          { name: "아콩카과 산", type: "🏔️ 서반구 최고봉", desc: "아시아를 제외하고 지구상에서 가장 높은 산(6,961m)입니다." },
+          { name: "라보카 지구", type: "🎨 탱고 거포", desc: "원색의 알록달록한 건물과 탱고 거리 공연이 펼쳐지는 곳입니다." },
+          { name: "피츠로이 산", type: "🏔️ 등반 명소", desc: "파타고니아의 불꽃이라 불리는 날카로운 봉우리의 산입니다." }
+        ]
+      },
+      "EGY": { 
+        countryName: "이집트 (Egypt)", capital: "카이로 (Cairo)", flag: "🇪🇬", continent: "아프리카", lat: 30.0444, lon: 31.2357, 
+        description: "피라미드와 스핑크스, 나일 강 문명이 숨 쉬는 북동 아프리카 중심국(대한민국의 약 10배)입니다.",
+        landmarks: [
+          { name: "기자 대피라미드 & 스핑크스", type: "🏛️ 고대 기적", desc: "쿠푸 황제의 거대 석조 피라미드와 스핑크스 동상입니다." },
+          { name: "나일 강", type: "🌊 세계 최장 강", desc: "아프리카 대륙을 관통해 지중해로 흐르는 이집트의 젖줄입니다." },
+          { name: "아부 심벨 신전", type: "🏛️ 고대 신전", desc: "람세스 2세가 암벽을 깎아 만든 웅장한 거대 신전입니다." },
+          { name: "왕들의 계곡 (룩소르)", type: "🏺 파라오 무덤", desc: "투탕카멘 등 고대 이집트 왕들의 암굴 무덤 유적지입니다." },
+          { name: "홍해 샤름 엘 셰이크", type: "🏖️ 해양 휴양지", desc: "투명한 수중 산호초와 스쿠버 다이빙으로 이름난 휴양지입니다." }
+        ]
+      },
+      "MLI": {
+        countryName: "말리 (Mali)", capital: "바마코 (Bamako)", flag: "🇲🇱", continent: "아프리카", lat: 17.5707, lon: -3.9962,
+        description: "서아프리카에 위치한 고대 이슬람 문화와 고요한 사막의 대륙 국가입니다.",
+        landmarks: [
+          { name: "젠네 대이슬람사당", type: "🕌 진흙 사원", desc: "세계 최대의 찰흙 벽돌 건축물이자 유네스코 세계유산입니다." },
+          { name: "팀북투 고도시", type: "🏛️ 역사 유적", desc: "고대 학문과 무역의 중심지였던 사막 전설의 도시입니다." },
+          { name: "반디아가라 절벽 (도곤족 마을)", type: "🏔️ 문화 유산", desc: "절벽 바위 산자락에 독특한 거주지를 형성한 도곤족 마을입니다." }
+        ]
+      },
+      "NER": {
+        countryName: "니제르 (Niger)", capital: "니아메 (Niamey)", flag: "🇳🇪", continent: "아프리카", lat: 17.6078, lon: 8.0817,
+        description: "서아프리카 내륙 사하라 사막 지대에 자리 잡은 대륙 국가입니다.",
+        landmarks: [
+          { name: "아가데즈 고도시", type: "🏛️ 역사 유적", desc: "사하라 사막 관문 도시의 높은 진흙 탑 사원 유적입니다." },
+          { name: "아이르 및 테네레 자연보호구역", type: "🏜️ 자연 유산", desc: "사하라 사막 최대 규모의 유네스코 자연보호구역입니다." },
+          { name: "니제르 강", type: "🌊 대강", desc: "서아프리카의 생명선 역할을 하는 거대한 대강입니다." }
+        ]
+      },
+      "TCD": {
+        countryName: "차드 (Chad)", capital: "은자메나 (N'Djamena)", flag: "🇹🇩", continent: "아프리카", lat: 15.4542, lon: 18.7322,
+        description: "중앙아프리카의 사막과 사바나 지대에 넓게 펼쳐진 내륙국입니다.",
+        landmarks: [
+          { name: "우니앙가 호수군", type: "🌊 사막 호수", desc: "사하라 사막 한가운데 위치한 신비로운 18개 연호군입니다." },
+          { name: "에네디 산악지대", type: "🏞️ 자연/문화유산", desc: "사암 협곡과 고대 암각화가 남아있는 웅장한 지대입니다." }
+        ]
+      },
+      "SDN": {
+        countryName: "수단 (Sudan)", capital: "카르툼 (Khartoum)", flag: "🇸🇩", continent: "아프리카", lat: 12.8628, lon: 30.2176,
+        description: "나일 강이 관통하는 북동아프리카의 역사적인 대륙 국가입니다.",
+        landmarks: [
+          { name: "메로에 누비아 피라미드", type: "🏛️ 피라미드군", desc: "이집트보다 더 많은 수의 독특한 날씬한 고대 피라미드입니다." },
+          { name: "청나일 & 백나일 합류지", type: "🌊 나일 강", desc: "수도 카르툼에서 두 나일 강 줄기가 만나는 장관입니다." }
+        ]
+      },
+      "SSD": {
+        countryName: "남수단 (South Sudan)", capital: "주바 (Juba)", flag: "🇸🇸", continent: "아프리카", lat: 6.8769, lon: 31.3069,
+        description: "동아프리카 내륙에 위치한 신생 독립국입니다.",
+        landmarks: [
+          { name: "수드 습지", type: "🌊 대습지", desc: "세계에서 가장 큰 백나일 강 유역 열대 습지입니다." }
+        ]
+      },
+      "KAZ": {
+        countryName: "카자흐스탄 (Kazakhstan)", capital: "아스타나 (Astana)", flag: "🇰🇿", continent: "중앙아시아", lat: 48.0196, lon: 66.9237,
+        description: "세계 최대 내륙국(대한민국의 약 27배)으로 광활한 스텝의 나라입니다.",
+        landmarks: [
+          { name: "샤린 캐니언", type: "🏞️ 대협곡", desc: "중앙아시아의 그랜드 캐니언이라 불리는 웅장한 협곡입니다." },
+          { name: "알마티 카인디 호수", type: "🌊 침수림 호수", desc: "지진으로 자작나무 숲이 호수 속에 수중 보존된 명소입니다." },
+          { name: "바이코누르 우주기지", type: "🚀 우주 기지", desc: "인류 최초 우주인 가가린이 발사되었던 우주 기지입니다." }
+        ]
+      },
+      "MEX": { 
+        countryName: "멕시코 (Mexico)", capital: "멕시코시티 (Mexico City)", flag: "🇲🇽", continent: "북아메리카", lat: 19.4326, lon: -99.1332, 
+        description: "마야 및 아즈텍 고대 문명의 유적과 카리브해의 아름다운 휴양지가 어우러진 국가(대한민국의 약 20배)입니다.",
+        landmarks: [
+          { name: "치첸이차 마야 피라미드", type: "🏛️ 세계 7대 기적", desc: "마야 문명의 피라미드 엘 카스티요 유적지입니다." },
+          { name: "테오티우아칸", type: "🏛️ 고대 도시", desc: "태양의 피라미드와 달의 피라미드가 우뚝 선 고대 유적입니다." },
+          { name: "칸쿤 카리브해", type: "🏖️ 휴양지", desc: "에메랄드빛 카리브해와 하얀 모래사장의 휴양 도시입니다." },
+          { name: "멕시코시티 소칼로 광장", type: "🏛️ 역사 중심지", desc: "세계에서 가장 넓은 광장 중 하나이자 역사적 중심지입니다." }
+        ]
+      },
+      "FRA": { 
+        countryName: "프랑스 (France)", capital: "파리 (Paris)", flag: "🇫🇷", continent: "유럽", lat: 48.8566, lon: 2.3522, 
+        description: "서유럽에 위치한 대표적인 문화, 예술, 요리, 건축의 나라(대한민국의 약 6.4배)입니다.",
+        landmarks: [
+          { name: "에펠탑", type: "🗼 상징 랜드마크", desc: "파리 시내를 한눈에 조망하는 세계적인 철탑 랜드마크입니다." },
+          { name: "루브르 박물관", type: "🎨 세계 최대 박물관", desc: "모나리자 등 전 세계 예술 보물들이 집대성된 박물관입니다." },
+          { name: "몽생미셸", type: "🏰 해상 수도원", desc: "조수에 따라 바다 위에 떠 있는 듯한 신비로운 수도원 섬입니다." },
+          { name: "몽블랑 산", type: "🏔️ 알프스 최고봉", desc: "알프스 산맥에서 가장 높은 아름다운 봉우리(4,807m)입니다." },
+          { name: "베르사유 궁전", type: "🏛️ 궁전", desc: "화려한 정원과 거울의 방으로 유명한 루이 14세의 궁전입니다." },
+          { name: "센 강", type: "🌊 강", desc: "에펠탑과 루브르를 품고 파리 시내를 흐르는 강입니다." }
+        ]
+      },
+      "ESP": { 
+        countryName: "스페인 (Spain)", capital: "마드리드 (Madrid)", flag: "🇪🇸", continent: "유럽", lat: 40.4168, lon: -3.7038, 
+        description: "이베리아 반도에 위치한 플라멩코와 건축가 가우디, 열정의 국가(대한민국의 약 5배)입니다.",
+        landmarks: [
+          { name: "사그라다 파밀리아 성당", type: "🏛️ 가우디 건축", desc: "바르셀로나에 위치한 독창적인 가우디의 미완성 대성당입니다." },
+          { name: "알함브라 궁전", type: "🏰 이슬람 궁전", desc: "그라나다에 위치한 정교하고 아름다운 이슬람 양식 궁전입니다." },
+          { name: "프라도 미술관", type: "🎨 미술관", desc: "스페인 왕실이 수집한 벨라스케스, 고야의 명화 미술관입니다." },
+          { name: "피레네 산맥", type: "🏔️ 자연 산맥", desc: "프랑스와 스페인 경계를 이루는 장엄한 산맥입니다." }
+        ]
+      },
+      "JPN": { 
+        countryName: "일본 (Japan)", capital: "도쿄 (Tokyo)", flag: "🇯🇵", continent: "아시아", lat: 35.6762, lon: 139.6503, 
+        description: "동아시아 태평양에 위치한 섬나라(대한민국의 약 3.8배)로 고유의 전통과 첨단 기술이 共存합니다.",
+        landmarks: [
+          { name: "후지산", type: "🏔️ 활화산", desc: "일본의 상징이자 최고봉(3,776m)인 원뿔형 활화산입니다." },
+          { name: "도쿄 타워 & 스카이트리", type: "🏙️ 랜드마크", desc: "도쿄 전경을 조망할 수 있는 초고층 타워입니다." },
+          { name: "교토 금각사 & 청수사", type: "🏛️ 전통 유적", desc: "일본 고도의 전통 목조 건축물과 정원이 보존된 사찰입니다." },
+          { name: "시나노 강", type: "🌊 강", desc: "일본에서 가장 길고 수량이 많은 강(367km)입니다." }
+        ]
+      },
+      "DEU": { 
+        countryName: "독일 (Germany)", capital: "베를린 (Berlin)", flag: "🇩🇪", continent: "유럽", lat: 52.5200, lon: 13.4050, 
+        description: "중앙유럽의 경제 및 기술 강국(대한민국의 약 3.5배)으로 유서 깊은 고성과 라인강의 나라입니다.",
+        landmarks: [
+          { name: "노이슈반슈타인 성", type: "🏰 고성", desc: "디즈니 신데렐라 성의 모티브가 된 동화 같은 궁전입니다." },
+          { name: "브란덴부르크 문", type: "🏛️ 역사 랜드마크", desc: "베를린의 상징이자 독일 통일의 역사적 상징물입니다." },
+          { name: "쾰른 대성당", type: "🏛️ 고딕 성당", desc: "쌍탑 높이가 157m에 달하는 웅장한 고딕 양식 대성당입니다." },
+          { name: "라인 강", type: "🌊 강", desc: "고성과 포도밭 언덕이 어우러진 유럽의 명물 수로입니다." }
+        ]
+      },
+      "ITA": { 
+        countryName: "이탈리아 (Italy)", capital: "로마 (Rome)", flag: "🇮🇹", continent: "유럽", lat: 41.9028, lon: 12.4964, 
+        description: "지중해 장화 모양 반도 국가(대한민국의 약 3배)로 찬란한 고대 로마 유적이 도시 전체에 숨 쉽니다.",
+        landmarks: [
+          { name: "콜로세움", type: "🏛️ 고대 유적", desc: "고대 로마 시대 검투사 경기가 열렸던 원형 경기장입니다." },
+          { name: "베네치아 운하", type: "🛶 물의 도시", desc: "자동차 없이 곤돌라 배로 이동하는 서정적인 물의 도시입니다." },
+          { name: "피사의 사탑", type: "🏛️ 건축 명소", desc: "기울어진 채 서 있어 세계적으로 이름난 대리석 종탑입니다." },
+          { name: "베수비오 화산 & 폼페이", type: "🌋 역사 유적", desc: "고대 폼페이 화산재에 묻혔던 화산 유적지입니다." }
+        ]
+      },
+      "GBR": { 
+        countryName: "영국 (United Kingdom)", capital: "런던 (London)", flag: "🇬🇧", continent: "유럽", lat: 51.5074, lon: -0.1278, 
+        description: "유럽 서북부의 섬나라(대한민국의 약 2.4배)로 오랜 역사적 전통과 문화 유산을 지닌 국가입니다.",
+        landmarks: [
+          { name: "빅벤 & 의회의사당", type: "🏛️ 대표 랜드마크", desc: "런던 템스 강변의 유서 깊은 시계탑과 의회 건물입니다." },
+          { name: "스톤헨지", type: "🪨 거석 유적", desc: "기원전 선사 시대에 거대한 돌을 세워 만든 미스터리 유적입니다." },
+          { name: "런던 타워브리지", type: "🌉 대표 도섭교", desc: "템스 강에 도섭이 가능한 아름다운 고딕 양식 도섭교입니다." },
+          { name: "템스 강", type: "🌊 강", desc: "수도 런던의 중심을 관통해 흐르는 역사적인 강입니다." }
+        ]
+      },
+      "NOR": {
+        countryName: "노르웨이 (Norway)", capital: "오슬로 (Oslo)", flag: "🇳🇴", continent: "유럽", lat: 60.4720, lon: 8.4689,
+        description: "웅장한 피오르 해안선과 오로라의 스칸디나비아 국가입니다.",
+        landmarks: [
+          { name: "송네 피오르", type: "🌊 피오르", desc: "세계에서 가장 길고 깊은 웅장한 피오르 협곡입니다." },
+          { name: "트롤퉁가", type: "🏔️ 절벽 명소", desc: "공중에 떠 있는 듯한 트롤의 혀 모양 바위 절벽입니다." },
+          { name: "게이랑에르 피오르", type: "🌊 유네스코 유산", desc: "폭포와 절벽 산맥이 어우러진 비경의 피오르입니다." },
+          { name: "로포텐 제도", type: "🏝️ 어촌 섬", desc: "오로라와 웅장한 암봉 산맥이 어우러진 북극권 섬들입니다." }
+        ]
+      },
+      "ISL": {
+        countryName: "아이슬란드 (Iceland)", capital: "레이캬비크 (Reykjavik)", flag: "🇮🇸", continent: "유럽", lat: 64.9631, lon: -19.0208,
+        description: "화산과 빙하, 온천으로 유명한 환상적인 섬나라입니다.",
+        landmarks: [
+          { name: "굴포스 폭포", type: "🌊 대폭포", desc: "금빛 폭포라 불리는 아이슬란드의 대표적 장관 폭포입니다." },
+          { name: "블루라군 온천", type: "♨️ 지열 온천", desc: "우윳빛 파란색의 해수 지열 온천 수영장입니다." },
+          { name: "게이시르 간헐천", type: "🌋 간헐천", desc: "주기적으로 뜨거운 수증기와 물기둥이 뿜어져 나오는 곳입니다." },
+          { name: "바트나요쿨 빙하", type: "🧊 거대 빙하", desc: "유럽에서 가장 넓은 면적을 자랑하는 대륙 빙하입니다." }
+        ]
+      },
+      "GRL": {
+        countryName: "그린란드 (Greenland)", capital: "누크 (Nuuk)", flag: "🇬🇱", continent: "북아메리카", lat: 71.7069, lon: -42.6043,
+        description: "지구상에서 가장 큰 섬으로 빙하가 펼쳐진 지역입니다.",
+        landmarks: [
+          { name: "일룰리삿 빙하 피오르", type: "🧊 유네스코 유산", desc: "거대한 유빙이 바다로 흘러드는 장엄한 북극 빙하 지대입니다." },
+          { name: "누크 국립박물관", type: "🏛️ 박물관", desc: "이누이트 역사와 문화가 전시된 박물관입니다." },
+          { name: "디스코 만", type: "🌊 북극 해만", desc: "거대한 빙산 사이로 고래를 관찰할 수 있는 북극 만입니다." }
+        ]
+      },
+      "TUR": {
+        countryName: "튀르키예 (Turkey)", capital: "앙카라 (Ankara)", flag: "🇹🇷", continent: "유라시아", lat: 38.9637, lon: 35.2433,
+        description: "동양과 서양이 만나는 유서 깊은 가교 국가입니다.",
+        landmarks: [
+          { name: "카파도키아 열기구 지대", type: "🎈 기암괴석", desc: "수많은 열기구가 하늘을 수놓는 기암괴석 기봉 지대입니다." },
+          { name: "아야 소피아", type: "🏛️ 역사 건축물", desc: "비잔틴 및 이슬람 양식이 혼재된 인류 건축의 걸작입니다." },
+          { name: "파묵칼레 온천", type: "♨️ 석회단구", desc: "하얀 석회 층층이 에메랄드빛 온천수가 고인 신비로운 곳입니다." },
+          { name: "에페수스 고대 도시", type: "🏛️ 로마 유적", desc: "셀수스 도서관과 원형극장이 잘 보존된 고대 도시입니다." }
+        ]
+      },
+      "THA": {
+        countryName: "태국 (Thailand)", capital: "방콕 (Bangkok)", flag: "🇹🇭", continent: "아시아", lat: 15.8700, lon: 100.9925,
+        description: "불교 사원과 미식, 해변 휴양지의 동남아시아 대표국입니다.",
+        landmarks: [
+          { name: "방콕 에메랄드 사원 (왓 프라깨우)", type: "🏛️ 왕실 사원", desc: "태국에서 가장 성스러운 국보 에메랄드 불상이 모셔진 사원입니다." },
+          { name: "피피 섬 & 푸켓", type: "🏖️ 해양 휴양지", desc: "에메랄드빛 바다와 석회암 절벽이 둘러싸인 휴양지입니다." },
+          { name: "아유타야 유적지", type: "🏛️ 고도 유적", desc: "고대 아유타야 왕국의 불상과 불탑 유적지입니다." }
+        ]
+      },
+      "IDN": {
+        countryName: "인도네시아 (Indonesia)", capital: "자카르타 (Jakarta)", flag: "🇮🇩", continent: "아시아", lat: -0.7893, lon: 113.9213,
+        description: "세계 최대의 도서 국가로 발리와 수마트라가 유명합니다.",
+        landmarks: [
+          { name: "발리 타나롯 사원", type: "🏛️ 해상 사원", desc: "바다 위 거대한 바위 위에 건립된 신비로운 사원입니다." },
+          { name: "보로부두르 불교 사원", type: "🏛️ 세계 최대 불교 사원", desc: "거대한 자바 석조 입체 불탑군으로 된 세계적 유산입니다." },
+          { name: "코모도 국립공원", type: "🐊 야생 서식지", desc: "세계에서 가장 큰 코모도왕도마뱀의 유일한 서식지입니다." },
+          { name: "브로모 화산", type: "🌋 화산 지대", desc: "일출 풍경과 화산재 평원이 펼쳐지는 활화산입니다." }
+        ]
+      },
+      "VNM": {
+        countryName: "베트남 (Vietnam)", capital: "하노이 (Hanoi)", flag: "🇻🇳", continent: "아시아", lat: 21.0285, lon: 105.8542,
+        description: "인도차이나 반도 동부에 길게 위치한 자연과 역사의 나라입니다.",
+        landmarks: [
+          { name: "하롱베이", type: "🌊 자연 유산", desc: "3,000여 개의 기암괴석 섬들이 바다 위에 솟아오른 명승지입니다." },
+          { name: "호이안 고깔 구시가지", type: "🏛️ 등불 거포", desc: "유네스코에 등재된 노란빛 고풍스러운 전통 무역 항구 마을입니다." },
+          { name: "퐁냐케방 동굴", type: "🕳️ 카르스트 동굴", desc: "세계 최대 규모의 광대한 지하 동굴 생태계입니다." }
+        ]
+      },
+      "PER": {
+        countryName: "페루 (Peru)", capital: "리마 (Lima)", flag: "🇵🇪", continent: "남아메리카", lat: -9.1899, lon: -75.0151,
+        description: "잉카 문명 마추픽추와 안데스의 신비로운 국가입니다.",
+        landmarks: [
+          { name: "마추픽추", type: "🏛️ 잃어버린 공중도시", desc: "안데스 산맥 해발 2,430m 절벽 위에 세워진 잉카 비밀 도시입니다." },
+          { name: "쿠스코 구시가지", type: "🏛️ 잉카 수도", desc: "잉카의 정교한 돌벽 위에 스페인 양식이 더해진 고도 도시입니다." },
+          { name: "나스카 지상화", type: "🎨 미스터리 지상화", desc: "사막 평원에 그려진 거대한 동식물 형태의 고대 지상화입니다." },
+          { name: "비니쿤카 무지개산", type: "🏔️ 오색 산", desc: "퇴적 지층이 오색 무지개 빛깔을 띠는 해발 5,200m 명산입니다." }
+        ]
+      },
+      "CHL": {
+        countryName: "칠레 (Chile)", capital: "산티아고 (Santiago)", flag: "🇨🇱", continent: "남아메리카", lat: -35.6751, lon: -71.5430,
+        description: "남북으로 4,300km 이상 길게 늘어선 안데스 해안 국가입니다.",
+        landmarks: [
+          { name: "토레스 델 파이네 국립공원", type: "🏔️ 파타고니아", desc: "수직에 가까운 3개의 거대한 화강암 봉우리가 있는 국립공원입니다." },
+          { name: "이스터 섬 모아이 석상", type: "🗿 거대 석상", desc: "태평양 외딴 섬에 우뚝 서 있는 미스터리 거대 석상들입니다." },
+          { name: "아타카마 사막", type: "🏜️ 세계 최건조 사막", desc: "지구상에서 가장 건조하며 별 관측의 천국으로 불리는 사막입니다." }
+        ]
+      },
+      "NZL": { 
+        countryName: "뉴질랜드 (New Zealand)", capital: "웰링턴 (Wellington)", flag: "🇳🇿", continent: "오세아니아", lat: -40.9006, lon: 174.8860, 
+        description: "남섬과 북섬의 장엄한 대자연과 마오리 문화가 보존된 청정 국가입니다.",
+        landmarks: [
+          { name: "밀포드 사운드", type: "🌊 피오르", desc: "빙하 침식으로 형성된 울창한 숲과 절벽 폭포의 피오르입니다." },
+          { name: "호비튼 영화 촬영지", type: "🏡 영화 명소", desc: "영화 반지의 제왕 속 호빗 마을 세트장 그대로 보존된 곳입니다." },
+          { name: "마운트 쿡", type: "🏔️ 최고봉", desc: "남알프스 산맥의 만년설이 아름다운 최고봉(3,724m)입니다." },
+          { name: "와이토모 반딧불 동굴", type: "✨ 반딧불 동굴", desc: "수만 마리의 반딧불이가 은하수처럼 빛나는 지하 동굴입니다." }
+        ]
+      },
+      "CHE": { 
+        countryName: "스위스 (Switzerland)", capital: "베른 (Bern)", flag: "🇨🇭", continent: "유럽", lat: 46.8181, lon: 8.2275, 
+        description: "알프스 산맥과 만년설, 평화로운 호수가 펼쳐진 아름다운 나라입니다.",
+        landmarks: [
+          { name: "마터호른 산", type: "🏔️ 알프스 명봉", desc: "파라마운트 영화사 로고로 유명한 뾰족한 봉우리 산입니다." },
+          { name: "융프라우요흐", type: "🏔️ 유럽의 지붕", desc: "산악 열차를 타고 올라가는 유럽 최고 높이의 철도역입니다." },
+          { name: "루체른 카펠교", type: "🌉 목조 다리", desc: "유럽에서 가장 오래된 지붕이 있는 목조 다리입니다." },
+          { name: "제네바 호수", type: "🌊 호수", desc: "알프스 고봉을 배경으로 대형 분수가 솟구치는 호수입니다." }
+        ]
+      },
+      "SGP": { 
+        countryName: "싱가포르 (Singapore)", capital: "싱가포르 (Singapore)", flag: "🇸🇬", continent: "아시아", lat: 1.3521, lon: 103.8198, 
+        description: "동남아시아 아열대 기후의 번영하는 아름다운 도시 국가입니다.",
+        landmarks: [
+          { name: "마리나 베이 샌즈", type: "🏙️ 랜드마크", desc: "옥상 인피니티 풀로 유명한 초현대적 3개 동 호텔 건물입니다." },
+          { name: "머라이언 파크", type: "🦁 상징 동상", desc: "사자 머리에 물고기 몸을 한 싱가포르의 상징 머라이언 동상입니다." },
+          { name: "가든스 바이 더 베이", type: "🌿 초대형 식물원", desc: "인공 슈퍼트리 구조물과 거대 유리 온실이 있는 식물원입니다." }
+        ]
+      }
     };
 
     const ENGLISH_NAME_MAP = {
@@ -407,8 +701,11 @@
       {
         id: "kr", isoCode: "KOR", countryName: "대한민국 (South Korea)", name: "대한민국 (South Korea)", category: "country", flag: "🇰🇷", capital: "서울 (Seoul)", lat: 37.5665, lon: 126.9780, continent: "아시아",
         landmarks: [
-          { name: "한라산", type: "🏔️ 산", desc: "제주도 중앙에 위치한 대한민국 최고봉(1,947m)입니다." },
-          { name: "한강", type: "🌊 강", desc: "수도 서울의 중심을 관통해 흐르는 대표 젖줄입니다." }
+          { name: "한라산", type: "🏔️ 명산", desc: "제주도 중앙에 위치한 대한민국 최고봉(1,947m)이자 유네스코 자연유산입니다." },
+          { name: "한강", type: "🌊 대표 강", desc: "수도 서울의 중심을 관통해 흐르는 대한민국 대표 젖줄입니다." },
+          { name: "경복궁", type: "🏛️ 왕궁 유적", desc: "조선 왕조의 으뜸 궁궐이자 역사 전통 유적지입니다." },
+          { name: "설악산 국립공원", type: "🏔️ 국립공원", desc: "기암괴석과 수려한 단풍으로 이름난 강원도 국립공원입니다." },
+          { name: "불국사 & 석굴암", type: "🏛️ 유네스코 유산", desc: "신라 천년의 숨결이 담긴 경주의 대표적인 불교 문화 유산입니다." }
         ],
         description: "동아시아 한반도 남부에 위치한 대표적인 IT, 문화, 경제 강국입니다."
       },
@@ -431,39 +728,69 @@
     const locationMap = new Map(LOCATIONS.map(loc => [loc.id, loc]));
     const isoToLocMap = new Map(LOCATIONS.map(loc => [loc.isoCode, loc]));
 
+    // ★ [오류 수정]: 좌표 및 대표 명소를 완벽히 결합하는 통합 정보 추출 함수
     function getCountryInfo(isoCode, rawName) {
       const loc = isoToLocMap.get(isoCode);
-      if (loc) return loc;
-
       const globalItem = GLOBAL_COUNTRY_MAP[isoCode];
-      if (globalItem) {
-        return {
-          countryName: globalItem.countryName,
-          capital: globalItem.capital,
-          flag: globalItem.flag || "🏳️",
-          continent: globalItem.continent || "지구 대륙",
-          description: globalItem.description || `${globalItem.countryName} 영역입니다.`,
-          landmarks: [],
-          lat: globalItem.lat,
-          lon: globalItem.lon,
-          isoCode: isoCode,
-          id: isoCode ? isoCode.toLowerCase() : "unknown"
-        };
+
+      let countryName = "";
+      let capital = "";
+      let flag = "🏳️";
+      let continent = "지구 대륙";
+      let description = "";
+      let landmarks = [];
+      let lat = undefined;
+      let lon = undefined;
+      let id = isoCode ? isoCode.toLowerCase() : "unknown";
+
+      if (loc) {
+        countryName = loc.countryName;
+        capital = loc.capital;
+        flag = loc.flag;
+        continent = loc.continent;
+        description = loc.description;
+        landmarks = (loc.landmarks && loc.landmarks.length > 0) ? loc.landmarks : [];
+        lat = loc.lat;
+        lon = loc.lon;
+        id = loc.id;
+      } else if (globalItem) {
+        countryName = globalItem.countryName;
+        capital = globalItem.capital;
+        flag = globalItem.flag || "🏳️";
+        continent = globalItem.continent || "지구 대륙";
+        description = globalItem.description || `${globalItem.countryName} 영역입니다.`;
+        landmarks = globalItem.landmarks || [];
+        lat = globalItem.lat;
+        lon = globalItem.lon;
+      } else {
+        const cleanRaw = rawName ? rawName.trim() : "";
+        const translatedName = ENGLISH_NAME_MAP[cleanRaw];
+        const formattedCountry = translatedName ? `${translatedName} (${cleanRaw})` : `${cleanRaw || isoCode || "영토"} (${isoCode || "Territory"})`;
+
+        countryName = formattedCountry;
+        capital = formattedCountry;
+        flag = "🏳️";
+        continent = "지구 대륙";
+        description = `${formattedCountry} 영역입니다.`;
+        lat = undefined;
+        lon = undefined;
       }
 
-      const cleanRaw = rawName ? rawName.trim() : "";
-      const translatedName = ENGLISH_NAME_MAP[cleanRaw];
-      const formattedCountry = translatedName ? `${translatedName} (${cleanRaw})` : `${cleanRaw || isoCode || "영토"} (${isoCode || "Territory"})`;
+      if ((!landmarks || landmarks.length === 0) && globalItem && globalItem.landmarks && globalItem.landmarks.length > 0) {
+        landmarks = globalItem.landmarks;
+      }
 
       return {
-        countryName: formattedCountry,
-        capital: formattedCountry,
-        flag: "🏳️",
-        continent: "지구 대륙",
-        description: `${formattedCountry} 영역입니다.`,
-        landmarks: [],
-        isoCode: isoCode,
-        id: isoCode ? isoCode.toLowerCase() : "unknown"
+        countryName,
+        capital,
+        flag,
+        continent,
+        description,
+        landmarks,
+        lat,
+        lon,
+        isoCode,
+        id
       };
     }
 
@@ -502,7 +829,6 @@
 
     let currentRotationVelocity = { x: 0, y: 0 };
 
-    // Pinch Zoom & Two-finger Twist Roll Gesture State
     let initialPinchDist = 0;
     let lastPinchAngle = 0;
     let initialCamZ = 16;
@@ -580,7 +906,9 @@
         deltaX = Math.max(-maxDelta, Math.min(maxDelta, deltaX));
         deltaY = Math.max(-maxDelta, Math.min(maxDelta, deltaY));
 
-        const sensitivity = 0.0075;
+        // ★ [핵심 개선]: 확대/축소 비율(Zoom)에 비례하는 완벽한 손가락 1:1 드래그 감도 적용
+        const zoomFactor = camera.position.z / 16.0;
+        const sensitivity = 0.0075 * zoomFactor;
         const stepX = deltaX * sensitivity;
         const stepY = deltaY * sensitivity;
 
@@ -603,12 +931,12 @@
         camera.position.z = THREE.MathUtils.clamp(camera.position.z + delta, 6.2, 25);
       }, { passive: true });
 
-      // ★ 손가락 두개 (2-Finger Pinch Zoom + Twist Roll Rotation) 이벤트
+      // 손가락 두개 (2-Finger Pinch Zoom + Twist Roll Rotation) 이벤트
       window.addEventListener("touchstart", (e) => {
         if (e.touches.length === 2) {
           isPointerDown = false;
           activePointerId = null;
-          isDraggingGlobe = true; // 2손가락 조작 중 클릭 발동 방지
+          isDraggingGlobe = true;
 
           const t1 = e.touches[0];
           const t2 = e.touches[1];
@@ -632,7 +960,7 @@
             camera.position.z = THREE.MathUtils.clamp(initialCamZ * factor, 6.2, 25);
           }
 
-          // 2. ★ 두 손가락 반대방향 스와이프 (Twist/Roll 360도 회전 - 방향 반대로 반영)
+          // 2. 두 손가락 반대방향 스와이프 (Twist/Roll 360도 회전)
           const currentAngle = Math.atan2(t2.clientY - t1.clientY, t2.clientX - t1.clientX);
           let deltaAngle = currentAngle - lastPinchAngle;
 
@@ -641,7 +969,6 @@
 
           if (Math.abs(deltaAngle) > 0.002) {
             const qZ = new THREE.Quaternion();
-            // 화면 중심 바라보는 Z축 기준 회전 (반대 방향 -deltaAngle 적용)
             qZ.setFromAxisAngle(new THREE.Vector3(0, 0, 1), -deltaAngle);
             globeGroup.quaternion.premultiply(qZ);
             lastPinchAngle = currentAngle;
@@ -963,6 +1290,7 @@
       document.body.style.cursor = "default";
     }
 
+    // ★ [오류 수정 완료]: 국가 터치 시 바다(0,0)로 튕기는 버그 완벽 수정
     function onGlobeClick() {
       if (isDraggingGlobe) return;
 
@@ -978,10 +1306,15 @@
           if (hitFeature) {
             const hitIsoCode = hitFeature.id;
             const countryInfo = getCountryInfo(hitIsoCode, hitFeature.properties?.name);
+
+            // DB에 중심 좌표가 있는 나라는 해당 좌표로, 미등록 영토는 터치된 지구 표면 실제 위경도로 이동
+            const targetLat = (countryInfo.lat !== undefined && countryInfo.lat !== null && countryInfo.lat !== 0) ? countryInfo.lat : lat;
+            const targetLon = (countryInfo.lon !== undefined && countryInfo.lon !== null && countryInfo.lon !== 0) ? countryInfo.lon : lon;
+
             onSelectLocation({
               ...countryInfo,
-              lat: countryInfo.lat !== undefined ? countryInfo.lat : lat,
-              lon: countryInfo.lon !== undefined ? countryInfo.lon : lon,
+              lat: targetLat,
+              lon: targetLon,
             });
           }
         }
@@ -1060,26 +1393,21 @@
       });
     }
 
-    // ★ [핵심] 국가 선택 시 북쪽(+Y)이 위로 정방향 정열되는 3D 쿼터니언 회전 연산
+    // 국가 선택 시 북쪽(+Y)이 위로 정방향 정열되는 3D 쿼터니언 회전 연산
     function focusLocation(lat, lon) {
       const targetPos = latLonToVector3(lat, lon, 1).normalize();
-      const northVec = new THREE.Vector3(0, 1, 0); // 로컬 북극 벡터
+      const northVec = new THREE.Vector3(0, 1, 0);
 
       let eastVec, tangentNorthVec;
 
-      // 극지방 예외 예비 연산
       if (Math.abs(lat) > 89.9) {
         eastVec = new THREE.Vector3(1, 0, 0);
         tangentNorthVec = new THREE.Vector3().crossVectors(targetPos, eastVec).normalize();
       } else {
-        // (북극 x 타겟위치) = 동쪽 접선 벡터
         eastVec = new THREE.Vector3().crossVectors(northVec, targetPos).normalize();
-        // (타겟위치 x 동쪽) = 북쪽 접선 벡터
         tangentNorthVec = new THREE.Vector3().crossVectors(targetPos, eastVec).normalize();
       }
 
-      // 월드 공간 기준:
-      // 동쪽 -> +X, 북쪽접선 -> +Y(위쪽!), 선택국가 -> +Z(카메라정면)
       const m = new THREE.Matrix4();
       m.set(
         eastVec.x, eastVec.y, eastVec.z, 0,
@@ -1300,8 +1628,9 @@
       if (item.landmarks && item.landmarks.length > 0) {
         landmarksHTML = `
           <div class="space-y-1.5 sm:space-y-2 mt-2 sm:mt-3">
-            <h4 class="text-[11px] sm:text-xs font-bold text-blue-400 uppercase tracking-wider flex items-center gap-1.5">
-              <span>🏔️ 유명 대표 자연 지형 및 명소</span>
+            <h4 class="text-[11px] sm:text-xs font-bold text-blue-400 uppercase tracking-wider flex items-center justify-between">
+              <span>🏔️ 대표 유명 관광지 명소 및 지형</span>
+              <span class="text-[10px] text-slate-400 font-normal">총 ${item.landmarks.length}개 수록</span>
             </h4>
             <div class="grid grid-cols-1 gap-2">
               ${item.landmarks.map(lm => `
@@ -1427,7 +1756,7 @@
     }
 
     function resetCameraView() {
-      const kr = isoToLocMap.get("KOR");
+      const kr = getCountryInfo("KOR");
       if (kr) onSelectLocation(kr);
       showToast("대한민국 위치로 이동했습니다.");
     }
@@ -1487,30 +1816,16 @@
       }
 
       const allSearchable = [];
-      LOCATIONS.forEach(loc => allSearchable.push(loc));
+      LOCATIONS.forEach(loc => allSearchable.push(getCountryInfo(loc.isoCode)));
 
       Object.keys(GLOBAL_COUNTRY_MAP).forEach(iso => {
-        const item = GLOBAL_COUNTRY_MAP[iso];
         if (!allSearchable.some(x => x.isoCode === iso)) {
-          allSearchable.push({
-            id: iso.toLowerCase(),
-            isoCode: iso,
-            countryName: item.countryName,
-            name: item.countryName,
-            category: "country",
-            flag: item.flag || "🏳️",
-            capital: item.capital || item.countryName,
-            lat: item.lat || 0,
-            lon: item.lon || 0,
-            continent: item.continent || "지구 대륙",
-            description: item.description || `${item.countryName} 영역입니다.`
-          });
+          allSearchable.push(getCountryInfo(iso));
         }
       });
 
       const matches = allSearchable.filter(loc => 
         (loc.countryName && loc.countryName.toLowerCase().includes(query)) ||
-        (loc.name && loc.name.toLowerCase().includes(query)) ||
         (loc.capital && loc.capital.toLowerCase().includes(query)) ||
         (loc.isoCode && loc.isoCode.toLowerCase().includes(query)) ||
         (loc.landmarks && loc.landmarks.some(lm => lm.name.toLowerCase().includes(query)))
@@ -1534,23 +1849,7 @@
     });
 
     function selectSearchResult(key) {
-      let item = isoToLocMap.get(key) || locationMap.get(key);
-      if (!item && GLOBAL_COUNTRY_MAP[key]) {
-        const g = GLOBAL_COUNTRY_MAP[key];
-        item = {
-          id: key.toLowerCase(),
-          isoCode: key,
-          countryName: g.countryName,
-          name: g.countryName,
-          category: "country",
-          flag: g.flag || "🏳️",
-          capital: g.capital,
-          lat: g.lat || 0,
-          lon: g.lon || 0,
-          continent: g.continent || "지구 대륙",
-          description: g.description || `${g.countryName} 영역입니다.`
-        };
-      }
+      const item = getCountryInfo(key);
       if (item) {
         onSelectLocation(item);
         searchInput.value = "";
