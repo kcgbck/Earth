@@ -96,8 +96,8 @@
   <div id="markers-container" class="absolute inset-0 pointer-events-none z-10 overflow-hidden"></div>
 
   <!-- Floating Cursor Hover Tooltip Badge -->
-  <div id="hoverTooltip" class="opacity-0 glass-panel px-3.5 py-2 rounded-xl shadow-2xl border border-amber-400/80 flex items-center gap-2.5 text-xs">
-    <span id="tooltipFlag" class="text-lg">🇰🇷</span>
+  <div id="hoverTooltip" class="opacity-0 glass-panel px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl shadow-2xl border border-amber-400/80 flex items-center gap-2 sm:gap-2.5 text-[11px] sm:text-xs">
+    <span id="tooltipFlag" class="text-base sm:text-lg">🇰🇷</span>
     <div>
       <div id="tooltipName" class="font-extrabold text-amber-300 leading-tight">대한민국 (South Korea)</div>
       <div id="tooltipCapital" class="text-[10px] text-slate-200">수도: 서울 (Seoul)</div>
@@ -105,32 +105,32 @@
   </div>
 
   <!-- Header & Search Bar -->
-  <div class="absolute top-0 left-0 right-0 z-20 p-3 sm:p-4 pointer-events-none flex flex-col items-center gap-2">
+  <div class="absolute top-0 left-0 right-0 z-20 p-2 sm:p-4 pointer-events-none flex flex-col items-center gap-1.5 sm:gap-2">
     <!-- Main Search & Title Container -->
-    <div class="w-full max-w-md pointer-events-auto glass-panel rounded-2xl p-2.5 px-4 shadow-2xl flex items-center justify-between border border-slate-700/50">
-      <div class="flex items-center gap-2.5">
-        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-cyan-500 flex items-center justify-center text-white shadow-lg shadow-blue-500/30">
-          <i class="fa-solid font-bold fa-globe text-lg"></i>
+    <div class="w-full max-w-md pointer-events-auto glass-panel rounded-2xl p-2 px-3 sm:p-2.5 sm:px-4 shadow-2xl flex items-center justify-between border border-slate-700/50">
+      <div class="flex items-center gap-2 sm:gap-2.5">
+        <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-cyan-500 flex items-center justify-center text-white shadow-lg shadow-blue-500/30">
+          <i class="fa-solid font-bold fa-globe text-base sm:text-lg"></i>
         </div>
         <div>
-          <h1 class="text-sm font-bold text-slate-100 leading-tight">3D 입체 지구본</h1>
-          <p class="text-[11px] text-slate-400">상하/좌우 360° 자유 회전 & 나만의 메모 DB</p>
+          <h1 class="text-xs sm:text-sm font-bold text-slate-100 leading-tight">3D 입체 지구본</h1>
+          <p class="text-[10px] sm:text-[11px] text-slate-400">360° 전방위 터치 회전 & 나만의 메모 DB</p>
         </div>
       </div>
 
       <!-- Search & DB Management Group -->
-      <div class="flex items-center gap-1.5 ml-2">
-        <button onclick="openDbModal()" title="DB 파일 내보내기/불러오기" class="px-2.5 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 text-xs font-bold flex items-center gap-1 active:scale-95 transition-all">
-          <i class="fa-solid fa-database"></i> <span class="hidden sm:inline">DB 관리</span>
+      <div class="flex items-center gap-1 sm:gap-1.5 ml-1.5">
+        <button onclick="openDbModal()" title="DB 파일 내보내기/불러오기" class="px-2 py-1 sm:px-2.5 sm:py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 text-[11px] sm:text-xs font-bold flex items-center gap-1 active:scale-95 transition-all">
+          <i class="fa-solid fa-database text-[10px] sm:text-xs"></i> <span class="hidden sm:inline">DB 관리</span>
         </button>
-        <div class="relative flex-1 max-w-[130px] sm:max-w-[160px]">
+        <div class="relative flex-1 max-w-[120px] sm:max-w-[160px]">
           <input 
             type="text" 
             id="searchInput" 
             placeholder="국가/수도 검색..." 
-            class="w-full bg-slate-900/80 border border-slate-700/80 rounded-xl px-3 py-1.5 pl-7 text-xs text-slate-100 placeholder-slate-400 focus:outline-none focus:border-blue-500 transition-all"
+            class="w-full bg-slate-900/80 border border-slate-700/80 rounded-xl px-2.5 py-1 sm:py-1.5 pl-6 sm:pl-7 text-[11px] sm:text-xs text-slate-100 placeholder-slate-400 focus:outline-none focus:border-blue-500 transition-all"
           />
-          <i class="fa-solid fa-magnifying-glass absolute left-2 top-2.5 text-[10px] text-slate-400"></i>
+          <i class="fa-solid fa-magnifying-glass absolute left-2 top-2 sm:top-2.5 text-[10px] text-slate-400"></i>
           <!-- Search Results Dropdown -->
           <div id="searchResults" class="hidden absolute top-full left-0 right-0 mt-2 bg-slate-900/95 border border-slate-700 rounded-xl shadow-2xl max-h-56 overflow-y-auto z-50 divide-y divide-slate-800"></div>
         </div>
@@ -138,51 +138,51 @@
     </div>
 
     <!-- Category Quick Filters -->
-    <div class="flex items-center gap-1.5 overflow-x-auto max-w-full px-2 py-1 pointer-events-auto hide-scrollbar">
-      <button onclick="setFilter('all')" id="filter-all" class="filter-btn active px-3 py-1 rounded-full text-xs font-medium bg-blue-600 text-white border border-blue-400/30 shadow-md transition-all">
+    <div class="flex items-center gap-1 sm:gap-1.5 overflow-x-auto max-w-full px-1.5 py-0.5 pointer-events-auto hide-scrollbar">
+      <button onclick="setFilter('all')" id="filter-all" class="filter-btn active px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full text-[11px] sm:text-xs font-medium bg-blue-600 text-white border border-blue-400/30 shadow-md transition-all">
         ✨ 전체
       </button>
-      <button onclick="setFilter('country')" id="filter-country" class="filter-btn px-3 py-1 rounded-full text-xs font-medium bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-all">
+      <button onclick="setFilter('country')" id="filter-country" class="filter-btn px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full text-[11px] sm:text-xs font-medium bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-all">
         🏳️ 국가/수도
       </button>
-      <button onclick="setFilter('landmark')" id="filter-landmark" class="filter-btn px-3 py-1 rounded-full text-xs font-medium bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-all">
+      <button onclick="setFilter('landmark')" id="filter-landmark" class="filter-btn px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full text-[11px] sm:text-xs font-medium bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-all">
         🏔️ 명산/강/호수
       </button>
-      <button onclick="setFilter('ocean')" id="filter-ocean" class="filter-btn px-3 py-1 rounded-full text-xs font-medium bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-all">
+      <button onclick="setFilter('ocean')" id="filter-ocean" class="filter-btn px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full text-[11px] sm:text-xs font-medium bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-all">
         🌊 대양/바다
       </button>
     </div>
   </div>
 
   <!-- Floating Right Controls -->
-  <div class="absolute right-3 top-1/2 -translate-y-1/2 z-20 flex flex-col gap-2.5 pointer-events-auto">
-    <button onclick="resetCameraView()" title="대한민국 중심으로 초기화" class="w-10 h-10 rounded-full glass-panel flex items-center justify-center text-slate-200 hover:text-white hover:bg-blue-600/50 active:scale-95 transition-all shadow-lg">
-      <i class="fa-solid fa-location-crosshairs text-base"></i>
+  <div class="absolute right-2.5 sm:right-3 top-1/2 -translate-y-1/2 z-20 flex flex-col gap-2 sm:gap-2.5 pointer-events-auto">
+    <button onclick="resetCameraView()" title="대한민국 중심으로 초기화" class="w-9 h-9 sm:w-10 sm:h-10 rounded-full glass-panel flex items-center justify-center text-slate-200 hover:text-white hover:bg-blue-600/50 active:scale-95 transition-all shadow-lg">
+      <i class="fa-solid fa-location-crosshairs text-sm sm:text-base"></i>
     </button>
-    <button onclick="toggleAutoRotate()" id="btn-autorotate" title="자동 회전 토글" class="w-10 h-10 rounded-full glass-panel flex items-center justify-center text-slate-200 hover:text-white hover:bg-blue-600/50 active:scale-95 transition-all shadow-lg">
-      <i class="fa-solid fa-rotate text-base"></i>
+    <button onclick="toggleAutoRotate()" id="btn-autorotate" title="자동 회전 토글" class="w-9 h-9 sm:w-10 sm:h-10 rounded-full glass-panel flex items-center justify-center text-slate-200 hover:text-white hover:bg-blue-600/50 active:scale-95 transition-all shadow-lg">
+      <i class="fa-solid fa-rotate text-sm sm:text-base"></i>
     </button>
-    <button onclick="toggleBorders()" id="btn-borders" title="국경선 표시 토글" class="w-10 h-10 rounded-full glass-panel bg-cyan-600/40 border border-cyan-400/50 flex items-center justify-center text-cyan-200 hover:text-white hover:bg-cyan-600/70 active:scale-95 transition-all shadow-lg">
-      <i class="fa-solid fa-draw-polygon text-base"></i>
+    <button onclick="toggleBorders()" id="btn-borders" title="국경선 표시 토글" class="w-9 h-9 sm:w-10 sm:h-10 rounded-full glass-panel bg-cyan-600/40 border border-cyan-400/50 flex items-center justify-center text-cyan-200 hover:text-white hover:bg-cyan-600/70 active:scale-95 transition-all shadow-lg">
+      <i class="fa-solid fa-draw-polygon text-sm sm:text-base"></i>
     </button>
-    <button onclick="toggleDayNight()" id="btn-daynight" title="낮/밤 조명 토글" class="w-10 h-10 rounded-full glass-panel flex items-center justify-center text-slate-200 hover:text-white hover:bg-blue-600/50 active:scale-95 transition-all shadow-lg">
-      <i class="fa-solid fa-sun text-base text-amber-400"></i>
+    <button onclick="toggleDayNight()" id="btn-daynight" title="낮/밤 조명 토글" class="w-9 h-9 sm:w-10 sm:h-10 rounded-full glass-panel flex items-center justify-center text-slate-200 hover:text-white hover:bg-blue-600/50 active:scale-95 transition-all shadow-lg">
+      <i class="fa-solid fa-sun text-sm sm:text-base text-amber-400"></i>
     </button>
-    <button onclick="zoomGlobe(1)" title="확대" class="w-10 h-10 rounded-full glass-panel flex items-center justify-center text-slate-200 hover:text-white hover:bg-blue-600/50 active:scale-95 transition-all shadow-lg">
-      <i class="fa-solid fa-plus text-base"></i>
+    <button onclick="zoomGlobe(1)" title="확대" class="w-9 h-9 sm:w-10 sm:h-10 rounded-full glass-panel flex items-center justify-center text-slate-200 hover:text-white hover:bg-blue-600/50 active:scale-95 transition-all shadow-lg">
+      <i class="fa-solid fa-plus text-sm sm:text-base"></i>
     </button>
-    <button onclick="zoomGlobe(-1)" title="축소" class="w-10 h-10 rounded-full glass-panel flex items-center justify-center text-slate-200 hover:text-white hover:bg-blue-600/50 active:scale-95 transition-all shadow-lg">
-      <i class="fa-solid fa-minus text-base"></i>
+    <button onclick="zoomGlobe(-1)" title="축소" class="w-9 h-9 sm:w-10 sm:h-10 rounded-full glass-panel flex items-center justify-center text-slate-200 hover:text-white hover:bg-blue-600/50 active:scale-95 transition-all shadow-lg">
+      <i class="fa-solid fa-minus text-sm sm:text-base"></i>
     </button>
   </div>
 
   <!-- Mobile Bottom Sheet / Country Detail Info Panel -->
   <div id="infoPanel" class="fixed inset-x-0 bottom-0 z-40 transform translate-y-full transition-transform duration-300 ease-out pointer-events-auto">
-    <div class="max-w-lg mx-auto glass-panel rounded-t-3xl border-t border-slate-700/80 shadow-2xl overflow-hidden max-h-[80vh] flex flex-col">
+    <div class="max-w-lg mx-auto glass-panel rounded-t-3xl border-t border-slate-700/80 shadow-2xl overflow-hidden max-h-[75vh] sm:max-h-[80vh] flex flex-col">
       
       <!-- Top Navigation Header -->
-      <div class="p-3 pb-2 px-5 flex items-center justify-between border-b border-slate-800 bg-slate-900/80">
-        <button onclick="closeInfoPanel()" class="flex items-center gap-1.5 text-xs font-semibold text-blue-400 hover:text-blue-300 py-1.5 px-3 rounded-xl bg-blue-500/10 border border-blue-500/20 active:scale-95 transition-all">
+      <div class="p-3 pb-2 px-4 sm:px-5 flex items-center justify-between border-b border-slate-800 bg-slate-900/80">
+        <button onclick="closeInfoPanel()" class="flex items-center gap-1.5 text-[11px] sm:text-xs font-semibold text-blue-400 hover:text-blue-300 py-1.5 px-2.5 sm:px-3 rounded-xl bg-blue-500/10 border border-blue-500/20 active:scale-95 transition-all">
           <i class="fa-solid fa-arrow-left"></i> 뒤로가기
         </button>
 
@@ -194,39 +194,39 @@
       </div>
 
       <!-- Panel Dynamic Content Body -->
-      <div id="panelContent" class="p-5 overflow-y-auto space-y-4 text-slate-200 hide-scrollbar">
+      <div id="panelContent" class="p-4 sm:p-5 overflow-y-auto space-y-3.5 sm:space-y-4 text-slate-200 hide-scrollbar">
         <!-- JS Dynamic Injection -->
       </div>
     </div>
   </div>
 
   <!-- Memo Modal (국가별 메모 입력 창) -->
-  <div id="memoModal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md hidden flex items-center justify-center p-4 pointer-events-auto">
-    <div class="w-full max-w-md glass-panel rounded-3xl p-5 border border-slate-700 shadow-2xl flex flex-col gap-4">
-      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-        <button onclick="closeMemoModal()" class="flex items-center gap-1.5 text-xs font-semibold text-blue-400 hover:text-blue-300 py-1 px-2.5 rounded-lg bg-blue-500/10 border border-blue-500/20 active:scale-95 transition-all">
+  <div id="memoModal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md hidden flex items-center justify-center p-3.5 sm:p-4 pointer-events-auto">
+    <div class="w-full max-w-[92vw] sm:max-w-md glass-panel rounded-3xl p-4 sm:p-5 border border-slate-700 shadow-2xl flex flex-col gap-3.5 sm:gap-4">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-2.5 sm:pb-3">
+        <button onclick="closeMemoModal()" class="flex items-center gap-1.5 text-[11px] sm:text-xs font-semibold text-blue-400 hover:text-blue-300 py-1 px-2.5 rounded-lg bg-blue-500/10 border border-blue-500/20 active:scale-95 transition-all">
           <i class="fa-solid fa-arrow-left"></i> 뒤로가기
         </button>
-        <h3 id="memoModalTitle" class="text-sm font-bold text-slate-100 flex items-center gap-1.5">📝 국가 메모</h3>
+        <h3 id="memoModalTitle" class="text-xs sm:text-sm font-bold text-slate-100 flex items-center gap-1.5">📝 국가 메모</h3>
         <button onclick="closeMemoModal()" class="w-7 h-7 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center transition-all">
           <i class="fa-solid fa-xmark text-sm"></i>
         </button>
       </div>
 
-      <div class="space-y-2">
-        <label for="memoInput" class="text-xs text-slate-400 block font-medium">나만의 메모 작성 (기기 DB 자동 보관)</label>
-        <textarea id="memoInput" rows="6" placeholder="이 국가에 대한 메모를 입력하세요..." class="w-full bg-slate-900/90 border border-slate-700/80 rounded-2xl p-3.5 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-amber-400 transition-all resize-none leading-relaxed"></textarea>
+      <div class="space-y-1.5 sm:space-y-2">
+        <label for="memoInput" class="text-[11px] sm:text-xs text-slate-400 block font-medium">나만의 메모 작성 (기기 DB 자동 보관)</label>
+        <textarea id="memoInput" rows="5" placeholder="이 국가에 대한 메모를 입력하세요..." class="w-full bg-slate-900/90 border border-slate-700/80 rounded-2xl p-3 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-amber-400 transition-all resize-none leading-relaxed"></textarea>
       </div>
 
       <div class="flex items-center justify-between gap-2 pt-1">
-        <button id="deleteMemoBtn" onclick="deleteMemo()" class="hidden px-3.5 py-2 rounded-xl bg-red-500/20 hover:bg-red-500/30 text-red-300 border border-red-500/30 text-xs font-semibold active:scale-95 transition-all flex items-center gap-1.5">
+        <button id="deleteMemoBtn" onclick="deleteMemo()" class="hidden px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl bg-red-500/20 hover:bg-red-500/30 text-red-300 border border-red-500/30 text-[11px] sm:text-xs font-semibold active:scale-95 transition-all flex items-center gap-1.5">
           <i class="fa-solid fa-trash-can"></i> 삭제
         </button>
         <div class="flex items-center gap-2 ml-auto">
-          <button onclick="closeMemoModal()" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold active:scale-95 transition-all">
+          <button onclick="closeMemoModal()" class="px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-[11px] sm:text-xs font-semibold active:scale-95 transition-all">
             취소하기
           </button>
-          <button onclick="saveMemo()" class="px-5 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-950 font-bold text-xs shadow-lg shadow-amber-500/20 active:scale-95 transition-all flex items-center gap-1.5">
+          <button onclick="saveMemo()" class="px-4 py-1.5 sm:px-5 sm:py-2 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-950 font-bold text-[11px] sm:text-xs shadow-lg shadow-amber-500/20 active:scale-95 transition-all flex items-center gap-1.5">
             <i class="fa-solid fa-floppy-disk"></i> 저장하기
           </button>
         </div>
@@ -234,33 +234,33 @@
     </div>
   </div>
 
-  <!-- DB Backup & Import Modal (DB 파일 내보내기 / 올리기 관리 창) -->
-  <div id="dbModal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md hidden flex items-center justify-center p-4 pointer-events-auto">
-    <div class="w-full max-w-md glass-panel rounded-3xl p-5 border border-slate-700 shadow-2xl flex flex-col gap-4">
-      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-        <button onclick="closeDbModal()" class="flex items-center gap-1.5 text-xs font-semibold text-blue-400 hover:text-blue-300 py-1 px-2.5 rounded-lg bg-blue-500/10 border border-blue-500/20 active:scale-95 transition-all">
+  <!-- DB Backup & Import Modal -->
+  <div id="dbModal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md hidden flex items-center justify-center p-3.5 sm:p-4 pointer-events-auto">
+    <div class="w-full max-w-[92vw] sm:max-w-md glass-panel rounded-3xl p-4 sm:p-5 border border-slate-700 shadow-2xl flex flex-col gap-3.5 sm:gap-4">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-2.5 sm:pb-3">
+        <button onclick="closeDbModal()" class="flex items-center gap-1.5 text-[11px] sm:text-xs font-semibold text-blue-400 hover:text-blue-300 py-1 px-2.5 rounded-lg bg-blue-500/10 border border-blue-500/20 active:scale-95 transition-all">
           <i class="fa-solid fa-arrow-left"></i> 뒤로가기
         </button>
-        <h3 class="text-sm font-bold text-amber-300 flex items-center gap-1.5"><i class="fa-solid fa-database"></i> 메모 DB 파일 관리</h3>
+        <h3 class="text-xs sm:text-sm font-bold text-amber-300 flex items-center gap-1.5"><i class="fa-solid fa-database"></i> 메모 DB 파일 관리</h3>
         <button onclick="closeDbModal()" class="w-7 h-7 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center transition-all">
           <i class="fa-solid fa-xmark text-sm"></i>
         </button>
       </div>
 
-      <div class="space-y-3">
-        <div class="p-3.5 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-2">
-          <h4 class="text-xs font-bold text-white flex items-center gap-1.5"><i class="fa-solid fa-download text-amber-400"></i> DB 다운로드 (백업 파일 저장)</h4>
-          <p class="text-[11px] text-slate-400 leading-relaxed">작성한 모든 국가 메모 데이터를 <code>globe_memos.json</code> 파일로 다운로드하여 백업합니다.</p>
-          <button onclick="downloadMemoDB()" class="w-full py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs flex items-center justify-center gap-1.5 active:scale-95 transition-all">
+      <div class="space-y-2.5 sm:space-y-3">
+        <div class="p-3 sm:p-3.5 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-1.5 sm:space-y-2">
+          <h4 class="text-[11px] sm:text-xs font-bold text-white flex items-center gap-1.5"><i class="fa-solid fa-download text-amber-400"></i> DB 다운로드 (백업 파일 저장)</h4>
+          <p class="text-[10px] sm:text-[11px] text-slate-400 leading-relaxed">작성한 모든 메모 데이터를 <code>globe_memos.json</code> 파일로 다운로드합니다.</p>
+          <button onclick="downloadMemoDB()" class="w-full py-2 sm:py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-[11px] sm:text-xs flex items-center justify-center gap-1.5 active:scale-95 transition-all">
             <i class="fa-solid fa-file-arrow-down"></i> DB 파일 다운로드
           </button>
         </div>
 
-        <div class="p-3.5 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-2">
-          <h4 class="text-xs font-bold text-white flex items-center gap-1.5"><i class="fa-solid fa-upload text-cyan-400"></i> DB 파일 올리기 (복원)</h4>
-          <p class="text-[11px] text-slate-400 leading-relaxed">기존에 백업한 DB 파일(<code>.json</code>)을 선택하여 이 기기의 어플 DB로 다시 올립니다.</p>
+        <div class="p-3 sm:p-3.5 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-1.5 sm:space-y-2">
+          <h4 class="text-[11px] sm:text-xs font-bold text-white flex items-center gap-1.5"><i class="fa-solid fa-upload text-cyan-400"></i> DB 파일 올리기 (복원)</h4>
+          <p class="text-[10px] sm:text-[11px] text-slate-400 leading-relaxed">백업한 DB 파일(<code>.json</code>)을 선택하여 이전 메모를 올립니다.</p>
           <input type="file" id="dbFileInput" accept=".json" onchange="uploadMemoDB(event)" class="hidden">
-          <button onclick="document.getElementById('dbFileInput').click()" class="w-full py-2.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-xs flex items-center justify-center gap-1.5 active:scale-95 transition-all">
+          <button onclick="document.getElementById('dbFileInput').click()" class="w-full py-2 sm:py-2.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-[11px] sm:text-xs flex items-center justify-center gap-1.5 active:scale-95 transition-all">
             <i class="fa-solid fa-file-arrow-up"></i> DB 파일 선택하여 올리기
           </button>
         </div>
@@ -275,10 +275,9 @@
 
   <!-- Main Application Script -->
   <script>
-    // PWA Service Worker 등록
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('sw.js').catch(() => {});
+        navigator.serviceWorker.register('sw.js?v=2').catch(() => {});
       });
     }
 
@@ -334,8 +333,8 @@
       "SDN": { countryName: "수단 (Sudan)", capital: "카르툼 (Khartoum)", flag: "🇸🇩", continent: "아프리카", lat: 12.8628, lon: 30.2176, description: "나일 강이 흐르는 북동아프리카 국가입니다." },
       "SSD": { countryName: "남수단 (South Sudan)", capital: "주바 (Juba)", flag: "🇸🇸", continent: "아프리카", lat: 6.8769, lon: 31.3069, description: "동아프리카 내륙에 위치한 신생 독립국입니다." },
       "ISL": { countryName: "아이슬란드 (Iceland)", capital: "레이캬비크 (Reykjavik)", flag: "🇮🇸", continent: "유럽", lat: 64.9631, lon: -19.0208, description: "화산과 빙하, 온천으로 유명한 북유럽의 아름다운 섬나라입니다." },
-      "GRL": { countryName: "그린란드 (Greenland)", capital: "누크 (Nuuk)", flag: "🇬🇱", continent: "북아메리카", lat: 71.7069, lon: -42.6043, description: "지구상에서 가장 큰 섬으로 웅장한 빙하와 피오르가 펼쳐진 지역입니다." },
-      "NOR": { countryName: "노르웨이 (Norway)", capital: "오슬로 (Oslo)", flag: "🇳🇴", continent: "유럽", lat: 60.4720, lon: 8.4689, description: "웅장한 피오르 해안선과 오로라로 유명한 스칸디나비아 국가입니다." },
+      "GRL": { countryName: "그린란드 (Greenland)", capital: "누크 (Nuuk)", flag: "🇬🇱", continent: "북아메리카", lat: 71.7069, lon: -42.6043, description: "지구상에서 가장 큰 섬으로 빙하가 펼쳐진 지역입니다." },
+      "NOR": { countryName: "노르웨이 (Norway)", capital: "오슬로 (Oslo)", flag: "🇳🇴", continent: "유럽", lat: 60.4720, lon: 8.4689, description: "웅장한 피오르 해안선과 오로라의 나라입니다." },
       "SWE": { countryName: "스웨덴 (Sweden)", capital: "스톡홀름 (Stockholm)", flag: "🇸🇪", continent: "유럽", lat: 60.1281, lon: 18.6435, description: "아름다운 호수와 숲, 혁신적인 복지로 알려진 북유럽 국가입니다." },
       "FIN": { countryName: "핀란드 (Finland)", capital: "헬싱키 (Helsinki)", flag: "🇫🇮", continent: "유럽", lat: 61.9241, lon: 25.7482, description: "산타클로스의 고향이자 자작나무 숲과 호수의 나라입니다." },
       "DNK": { countryName: "덴마크 (Denmark)", capital: "코펜하겐 (Copenhagen)", flag: "🇩🇰", continent: "유럽", lat: 56.2639, lon: 9.5018, description: "동화 작가 안데르센의 고향이자 유틀란트 반도의 북유럽 국가입니다." },
@@ -502,7 +501,11 @@
     let isFocusingAnimation = false;
 
     let currentRotationVelocity = { x: 0, y: 0 };
-    let initialPinchDist = 0, initialCamZ = 16;
+
+    // Pinch Zoom & Two-finger Twist Roll Gesture State
+    let initialPinchDist = 0;
+    let lastPinchAngle = 0;
+    let initialCamZ = 16;
 
     const tempVec = new THREE.Vector3();
     const cameraWorldPos = new THREE.Vector3();
@@ -539,6 +542,7 @@
 
       window.addEventListener("resize", onWindowResize);
 
+      // 모바일 Single / Multi Pointer Event Handlers
       window.addEventListener("pointerdown", (e) => {
         if (e.button !== 0 && e.pointerType === "mouse") return;
         if (e.touches && e.touches.length > 1) {
@@ -593,31 +597,61 @@
       window.addEventListener("pointerup", onPointerEnd);
       window.addEventListener("pointercancel", onPointerEnd);
 
+      // Wheel Zoom
       window.addEventListener("wheel", (e) => {
         const delta = e.deltaY > 0 ? 0.9 : -0.9;
         camera.position.z = THREE.MathUtils.clamp(camera.position.z + delta, 6.2, 25);
       }, { passive: true });
 
+      // ★ 손가락 두개 (2-Finger Pinch Zoom + Twist Roll Rotation) 이벤트
       window.addEventListener("touchstart", (e) => {
         if (e.touches.length === 2) {
           isPointerDown = false;
           activePointerId = null;
-          initialPinchDist = Math.hypot(
-            e.touches[0].clientX - e.touches[1].clientX,
-            e.touches[0].clientY - e.touches[1].clientY
-          );
+          isDraggingGlobe = true; // 2손가락 조작 중 클릭 발동 방지
+
+          const t1 = e.touches[0];
+          const t2 = e.touches[1];
+
+          initialPinchDist = Math.hypot(t1.clientX - t2.clientX, t1.clientY - t2.clientY);
+          lastPinchAngle = Math.atan2(t2.clientY - t1.clientY, t2.clientX - t1.clientX);
           initialCamZ = camera.position.z;
         }
-      });
+      }, { passive: true });
 
       window.addEventListener("touchmove", (e) => {
         if (e.touches.length === 2 && initialPinchDist > 0) {
-          const dist = Math.hypot(
-            e.touches[0].clientX - e.touches[1].clientX,
-            e.touches[0].clientY - e.touches[1].clientY
-          );
-          const factor = initialPinchDist / dist;
-          camera.position.z = THREE.MathUtils.clamp(initialCamZ * factor, 6.2, 25);
+          isDraggingGlobe = true;
+          const t1 = e.touches[0];
+          const t2 = e.touches[1];
+
+          // 1. Pinch Zoom (확대 / 축소)
+          const dist = Math.hypot(t1.clientX - t2.clientX, t1.clientY - t2.clientY);
+          if (dist > 0) {
+            const factor = initialPinchDist / dist;
+            camera.position.z = THREE.MathUtils.clamp(initialCamZ * factor, 6.2, 25);
+          }
+
+          // 2. ★ 두 손가락 반대방향 스와이프 (Twist/Roll 360도 회전)
+          const currentAngle = Math.atan2(t2.clientY - t1.clientY, t2.clientX - t1.clientX);
+          let deltaAngle = currentAngle - lastPinchAngle;
+
+          while (deltaAngle > Math.PI) deltaAngle -= Math.PI * 2;
+          while (deltaAngle < -Math.PI) deltaAngle += Math.PI * 2;
+
+          if (Math.abs(deltaAngle) > 0.002) {
+            const qZ = new THREE.Quaternion();
+            // 화면 중심 바라보는 Z축 기준 회전
+            qZ.setFromAxisAngle(new THREE.Vector3(0, 0, 1), deltaAngle);
+            globeGroup.quaternion.premultiply(qZ);
+            lastPinchAngle = currentAngle;
+          }
+        }
+      }, { passive: true });
+
+      window.addEventListener("touchend", (e) => {
+        if (e.touches.length < 2) {
+          initialPinchDist = 0;
         }
       });
 
@@ -963,14 +997,14 @@
         const pos = latLonToVector3(loc.lat, loc.lon, GLOBE_RADIUS + 0.05);
 
         const el = document.createElement("div");
-        el.className = "globe-marker flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold shadow-xl backdrop-blur-md border";
+        el.className = "globe-marker flex items-center gap-1 sm:gap-1.5 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full text-[10px] sm:text-[11px] font-bold shadow-xl backdrop-blur-md border";
         
         if (loc.category === "country") {
           el.classList.add("bg-slate-900/90", "text-slate-100", "border-blue-400/60");
-          el.innerHTML = `<span class="text-xs">${loc.flag}</span><span class="text-blue-200">${loc.countryName}</span>`;
+          el.innerHTML = `<span class="text-[11px] sm:text-xs">${loc.flag}</span><span class="text-blue-200">${loc.countryName}</span>`;
         } else {
           el.classList.add("bg-blue-900/80", "text-cyan-200", "border-cyan-400/40");
-          el.innerHTML = `<span class="text-xs">🌊</span><span>${loc.countryName}</span>`;
+          el.innerHTML = `<span class="text-[11px] sm:text-xs">🌊</span><span>${loc.countryName}</span>`;
         }
 
         el.addEventListener("mouseenter", () => {
@@ -1026,12 +1060,36 @@
       });
     }
 
+    // ★ [핵심] 국가 선택 시 북쪽(+Y)이 위로 정방향 정열되는 3D 쿼터니언 회전 연산
     function focusLocation(lat, lon) {
-      const targetLocalVec = latLonToVector3(lat, lon, 1).normalize();
-      const desiredWorldVec = new THREE.Vector3(0, 0, 1);
+      const targetPos = latLonToVector3(lat, lon, 1).normalize();
+      const northVec = new THREE.Vector3(0, 1, 0); // 로컬 북극 벡터
+
+      let eastVec, tangentNorthVec;
+
+      // 극지방 예외 예비 연산
+      if (Math.abs(lat) > 89.9) {
+        eastVec = new THREE.Vector3(1, 0, 0);
+        tangentNorthVec = new THREE.Vector3().crossVectors(targetPos, eastVec).normalize();
+      } else {
+        // (북극 x 타겟위치) = 동쪽 접선 벡터
+        eastVec = new THREE.Vector3().crossVectors(northVec, targetPos).normalize();
+        // (타겟위치 x 동쪽) = 북쪽 접선 벡터
+        tangentNorthVec = new THREE.Vector3().crossVectors(targetPos, eastVec).normalize();
+      }
+
+      // 월드 공간 기준:
+      // 동쪽 -> +X, 북쪽접선 -> +Y(위쪽!), 선택국가 -> +Z(카메라정면)
+      const m = new THREE.Matrix4();
+      m.set(
+        eastVec.x, eastVec.y, eastVec.z, 0,
+        tangentNorthVec.x, tangentNorthVec.y, tangentNorthVec.z, 0,
+        targetPos.x, targetPos.y, targetPos.z, 0,
+        0, 0, 0, 1
+      );
 
       const startQ = globeGroup.quaternion.clone();
-      const targetQ = new THREE.Quaternion().setFromUnitVectors(targetLocalVec, desiredWorldVec);
+      const targetQ = new THREE.Quaternion().setFromRotationMatrix(m);
 
       const startZoom = camera.position.z;
       const targetZoom = 12;
@@ -1090,7 +1148,7 @@
     }
 
     // ==========================================
-    // 3. MEMO MODAL & DB SYNC CONTROLS
+    // 3. MEMO MODAL & DB CONTROLS
     // ==========================================
     function openMemoModal(isoCode) {
       currentEditingIsoCode = isoCode || selectedIsoCode;
@@ -1174,7 +1232,6 @@
       }
     }
 
-    // DB 파일 백업 / 복원 (JSON 내보내기 및 올리기)
     function openDbModal() {
       document.getElementById("dbModal").classList.remove("hidden");
       if (!history.state || !history.state.dbOpen) {
@@ -1242,18 +1299,18 @@
       let landmarksHTML = "";
       if (item.landmarks && item.landmarks.length > 0) {
         landmarksHTML = `
-          <div class="space-y-2 mt-3">
-            <h4 class="text-xs font-bold text-blue-400 uppercase tracking-wider flex items-center gap-1.5">
+          <div class="space-y-1.5 sm:space-y-2 mt-2 sm:mt-3">
+            <h4 class="text-[11px] sm:text-xs font-bold text-blue-400 uppercase tracking-wider flex items-center gap-1.5">
               <span>🏔️ 유명 대표 자연 지형 및 명소</span>
             </h4>
             <div class="grid grid-cols-1 gap-2">
               ${item.landmarks.map(lm => `
-                <div class="p-3 rounded-xl bg-slate-900/90 border border-slate-800 flex flex-col gap-1">
+                <div class="p-2.5 sm:p-3 rounded-xl bg-slate-900/90 border border-slate-800 flex flex-col gap-1">
                   <div class="flex items-center justify-between">
-                    <span class="text-xs font-bold text-amber-300">${lm.name}</span>
-                    <span class="text-[10px] px-2 py-0.5 rounded-full bg-slate-800 text-slate-400">${lm.type}</span>
+                    <span class="text-[11px] sm:text-xs font-bold text-amber-300">${lm.name}</span>
+                    <span class="text-[9px] sm:text-[10px] px-2 py-0.5 rounded-full bg-slate-800 text-slate-400">${lm.type}</span>
                   </div>
-                  <p class="text-xs text-slate-300 leading-relaxed">${lm.desc}</p>
+                  <p class="text-[11px] sm:text-xs text-slate-300 leading-relaxed">${lm.desc}</p>
                 </div>
               `).join('')}
             </div>
@@ -1263,13 +1320,13 @@
 
       content.innerHTML = `
         <div class="flex items-start justify-between gap-2">
-          <div class="flex items-center gap-3">
-            <span class="text-4xl shadow-sm">${item.flag}</span>
+          <div class="flex items-center gap-2.5 sm:gap-3">
+            <span class="text-3xl sm:text-4xl shadow-sm">${item.flag}</span>
             <div>
               <div class="flex items-center gap-2">
-                <h2 class="text-lg font-bold text-white leading-tight">${item.countryName}</h2>
+                <h2 class="text-base sm:text-lg font-bold text-white leading-tight">${item.countryName}</h2>
               </div>
-              <p class="text-xs text-slate-300 mt-1 flex items-center gap-1.5">
+              <p class="text-[11px] sm:text-xs text-slate-300 mt-1 flex items-center gap-1.5">
                 <span class="px-2 py-0.5 rounded-md bg-amber-500/20 text-amber-300 border border-amber-500/30 font-semibold">🏛️ 수도: ${item.capital}</span>
                 <span class="text-slate-400">| 🌍 ${item.continent}</span>
               </p>
@@ -1277,25 +1334,25 @@
           </div>
           
           <div class="flex flex-col gap-1.5 items-end">
-            <button onclick="openMemoModal('${item.isoCode}')" title="메모하기" class="px-3 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 text-xs font-bold flex items-center gap-1.5 active:scale-95 transition-all shadow-md">
+            <button onclick="openMemoModal('${item.isoCode}')" title="메모하기" class="px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 text-[11px] sm:text-xs font-bold flex items-center gap-1.5 active:scale-95 transition-all shadow-md">
               <i class="fa-solid fa-pen-to-square"></i> <span id="memoBtnText_${item.isoCode}">메모 작성</span>
             </button>
-            <button onclick="focusLocation(${item.lat}, ${item.lon})" title="초점 맞추기" class="px-3 py-1 rounded-xl bg-blue-600/30 hover:bg-blue-600/50 text-blue-300 border border-blue-500/30 text-[11px] font-semibold flex items-center gap-1 active:scale-95 transition-all">
+            <button onclick="focusLocation(${item.lat}, ${item.lon})" title="초점 맞추기" class="px-2.5 py-1 rounded-xl bg-blue-600/30 hover:bg-blue-600/50 text-blue-300 border border-blue-500/30 text-[10px] sm:text-[11px] font-semibold flex items-center gap-1 active:scale-95 transition-all">
               <i class="fa-solid fa-crosshairs"></i> 이동
             </button>
           </div>
         </div>
 
-        <div id="countryMemoBox_${item.isoCode}" class="hidden p-3.5 rounded-2xl bg-amber-950/40 border border-amber-500/40 text-xs space-y-1 shadow-inner">
-          <div class="flex items-center justify-between text-[11px] font-bold text-amber-400 border-b border-amber-500/20 pb-1.5 mb-1.5">
+        <div id="countryMemoBox_${item.isoCode}" class="hidden p-3 sm:p-3.5 rounded-2xl bg-amber-950/40 border border-amber-500/40 text-xs space-y-1 shadow-inner">
+          <div class="flex items-center justify-between text-[10px] sm:text-[11px] font-bold text-amber-400 border-b border-amber-500/20 pb-1 mb-1">
             <span class="flex items-center gap-1"><i class="fa-solid fa-note-sticky"></i> 작성된 메모</span>
-            <span class="text-[10px] text-amber-400/80 font-normal" id="memoDate_${item.isoCode}"></span>
+            <span class="text-[9px] sm:text-[10px] text-amber-400/80 font-normal" id="memoDate_${item.isoCode}"></span>
           </div>
-          <p id="memoContent_${item.isoCode}" class="text-slate-200 whitespace-pre-wrap leading-relaxed text-xs"></p>
+          <p id="memoContent_${item.isoCode}" class="text-slate-200 whitespace-pre-wrap leading-relaxed text-[11px] sm:text-xs"></p>
         </div>
 
-        <div class="p-3.5 rounded-2xl bg-slate-900/60 border border-slate-800/80">
-          <p class="text-xs text-slate-300 leading-relaxed">${item.description}</p>
+        <div class="p-3 sm:p-3.5 rounded-2xl bg-slate-900/60 border border-slate-800/80">
+          <p class="text-[11px] sm:text-xs text-slate-300 leading-relaxed">${item.description}</p>
         </div>
 
         ${landmarksHTML}
@@ -1393,12 +1450,12 @@
       if (isDayMode) {
         dirLight.intensity = 1.2;
         ambientLight.intensity = 0.75;
-        btn.innerHTML = `<i class="fa-solid fa-sun text-base text-amber-400"></i>`;
+        btn.innerHTML = `<i class="fa-solid fa-sun text-sm sm:text-base text-amber-400"></i>`;
         showToast("낮 조명 모드");
       } else {
         dirLight.intensity = 0.4;
         ambientLight.intensity = 0.2;
-        btn.innerHTML = `<i class="fa-solid fa-moon text-base text-indigo-300"></i>`;
+        btn.innerHTML = `<i class="fa-solid fa-moon text-sm sm:text-base text-indigo-300"></i>`;
         showToast("야간 조명 모드");
       }
     }
