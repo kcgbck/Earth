@@ -1,0 +1,1560 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>3D 입체 지구본</title>
+
+  <!-- PWA App Meta Tags -->
+  <meta name="theme-color" content="#020617">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="3D지구본">
+
+  <!-- PWA App Icon & Manifest Link -->
+  <link rel="icon" type="image/svg+xml" href="icon.svg">
+  <link rel="apple-touch-icon" href="icon.svg">
+  <link rel="manifest" href="manifest.json">
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Three.js (3D 엔진) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <!-- FontAwesome 아이콘 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      touch-action: none;
+      user-select: none;
+      -webkit-user-select: none;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+    
+    #canvas-container {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 1;
+      touch-action: none;
+    }
+
+    .globe-marker {
+      position: absolute;
+      top: 0;
+      left: 0;
+      cursor: pointer;
+      will-change: transform, opacity;
+      pointer-events: auto;
+      white-space: nowrap;
+      transition: background-color 0.2s ease, border-color 0.2s ease;
+    }
+
+    .globe-marker:hover {
+      z-index: 9999 !important;
+    }
+
+    .glass-panel {
+      background: rgba(15, 23, 42, 0.92);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .hide-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .hide-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    #hoverTooltip {
+      position: fixed;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      z-index: 100;
+      transition: opacity 0.12s ease;
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100">
+
+  <!-- 3D Canvas Context Container -->
+  <div id="canvas-container"></div>
+
+  <!-- HTML Overlays Container for Pins & Labels -->
+  <div id="markers-container" class="absolute inset-0 pointer-events-none z-10 overflow-hidden"></div>
+
+  <!-- Floating Cursor Hover Tooltip Badge -->
+  <div id="hoverTooltip" class="opacity-0 glass-panel px-3.5 py-2 rounded-xl shadow-2xl border border-amber-400/80 flex items-center gap-2.5 text-xs">
+    <span id="tooltipFlag" class="text-lg">🇰🇷</span>
+    <div>
+      <div id="tooltipName" class="font-extrabold text-amber-300 leading-tight">대한민국 (South Korea)</div>
+      <div id="tooltipCapital" class="text-[10px] text-slate-200">수도: 서울 (Seoul)</div>
+    </div>
+  </div>
+
+  <!-- Header & Search Bar -->
+  <div class="absolute top-0 left-0 right-0 z-20 p-3 sm:p-4 pointer-events-none flex flex-col items-center gap-2">
+    <!-- Main Search & Title Container -->
+    <div class="w-full max-w-md pointer-events-auto glass-panel rounded-2xl p-2.5 px-4 shadow-2xl flex items-center justify-between border border-slate-700/50">
+      <div class="flex items-center gap-2.5">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-cyan-500 flex items-center justify-center text-white shadow-lg shadow-blue-500/30">
+          <i class="fa-solid font-bold fa-globe text-lg"></i>
+        </div>
+        <div>
+          <h1 class="text-sm font-bold text-slate-100 leading-tight">3D 입체 지구본</h1>
+          <p class="text-[11px] text-slate-400">상하/좌우 360° 자유 회전 & 나만의 메모 DB</p>
+        </div>
+      </div>
+
+      <!-- Search & DB Management Group -->
+      <div class="flex items-center gap-1.5 ml-2">
+        <button onclick="openDbModal()" title="DB 파일 내보내기/불러오기" class="px-2.5 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 text-xs font-bold flex items-center gap-1 active:scale-95 transition-all">
+          <i class="fa-solid fa-database"></i> <span class="hidden sm:inline">DB 관리</span>
+        </button>
+        <div class="relative flex-1 max-w-[130px] sm:max-w-[160px]">
+          <input 
+            type="text" 
+            id="searchInput" 
+            placeholder="국가/수도 검색..." 
+            class="w-full bg-slate-900/80 border border-slate-700/80 rounded-xl px-3 py-1.5 pl-7 text-xs text-slate-100 placeholder-slate-400 focus:outline-none focus:border-blue-500 transition-all"
+          />
+          <i class="fa-solid fa-magnifying-glass absolute left-2 top-2.5 text-[10px] text-slate-400"></i>
+          <!-- Search Results Dropdown -->
+          <div id="searchResults" class="hidden absolute top-full left-0 right-0 mt-2 bg-slate-900/95 border border-slate-700 rounded-xl shadow-2xl max-h-56 overflow-y-auto z-50 divide-y divide-slate-800"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Category Quick Filters -->
+    <div class="flex items-center gap-1.5 overflow-x-auto max-w-full px-2 py-1 pointer-events-auto hide-scrollbar">
+      <button onclick="setFilter('all')" id="filter-all" class="filter-btn active px-3 py-1 rounded-full text-xs font-medium bg-blue-600 text-white border border-blue-400/30 shadow-md transition-all">
+        ✨ 전체
+      </button>
+      <button onclick="setFilter('country')" id="filter-country" class="filter-btn px-3 py-1 rounded-full text-xs font-medium bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-all">
+        🏳️ 국가/수도
+      </button>
+      <button onclick="setFilter('landmark')" id="filter-landmark" class="filter-btn px-3 py-1 rounded-full text-xs font-medium bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-all">
+        🏔️ 명산/강/호수
+      </button>
+      <button onclick="setFilter('ocean')" id="filter-ocean" class="filter-btn px-3 py-1 rounded-full text-xs font-medium bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-all">
+        🌊 대양/바다
+      </button>
+    </div>
+  </div>
+
+  <!-- Floating Right Controls -->
+  <div class="absolute right-3 top-1/2 -translate-y-1/2 z-20 flex flex-col gap-2.5 pointer-events-auto">
+    <button onclick="resetCameraView()" title="대한민국 중심으로 초기화" class="w-10 h-10 rounded-full glass-panel flex items-center justify-center text-slate-200 hover:text-white hover:bg-blue-600/50 active:scale-95 transition-all shadow-lg">
+      <i class="fa-solid fa-location-crosshairs text-base"></i>
+    </button>
+    <button onclick="toggleAutoRotate()" id="btn-autorotate" title="자동 회전 토글" class="w-10 h-10 rounded-full glass-panel flex items-center justify-center text-slate-200 hover:text-white hover:bg-blue-600/50 active:scale-95 transition-all shadow-lg">
+      <i class="fa-solid fa-rotate text-base"></i>
+    </button>
+    <button onclick="toggleBorders()" id="btn-borders" title="국경선 표시 토글" class="w-10 h-10 rounded-full glass-panel bg-cyan-600/40 border border-cyan-400/50 flex items-center justify-center text-cyan-200 hover:text-white hover:bg-cyan-600/70 active:scale-95 transition-all shadow-lg">
+      <i class="fa-solid fa-draw-polygon text-base"></i>
+    </button>
+    <button onclick="toggleDayNight()" id="btn-daynight" title="낮/밤 조명 토글" class="w-10 h-10 rounded-full glass-panel flex items-center justify-center text-slate-200 hover:text-white hover:bg-blue-600/50 active:scale-95 transition-all shadow-lg">
+      <i class="fa-solid fa-sun text-base text-amber-400"></i>
+    </button>
+    <button onclick="zoomGlobe(1)" title="확대" class="w-10 h-10 rounded-full glass-panel flex items-center justify-center text-slate-200 hover:text-white hover:bg-blue-600/50 active:scale-95 transition-all shadow-lg">
+      <i class="fa-solid fa-plus text-base"></i>
+    </button>
+    <button onclick="zoomGlobe(-1)" title="축소" class="w-10 h-10 rounded-full glass-panel flex items-center justify-center text-slate-200 hover:text-white hover:bg-blue-600/50 active:scale-95 transition-all shadow-lg">
+      <i class="fa-solid fa-minus text-base"></i>
+    </button>
+  </div>
+
+  <!-- Mobile Bottom Sheet / Country Detail Info Panel -->
+  <div id="infoPanel" class="fixed inset-x-0 bottom-0 z-40 transform translate-y-full transition-transform duration-300 ease-out pointer-events-auto">
+    <div class="max-w-lg mx-auto glass-panel rounded-t-3xl border-t border-slate-700/80 shadow-2xl overflow-hidden max-h-[80vh] flex flex-col">
+      
+      <!-- Top Navigation Header -->
+      <div class="p-3 pb-2 px-5 flex items-center justify-between border-b border-slate-800 bg-slate-900/80">
+        <button onclick="closeInfoPanel()" class="flex items-center gap-1.5 text-xs font-semibold text-blue-400 hover:text-blue-300 py-1.5 px-3 rounded-xl bg-blue-500/10 border border-blue-500/20 active:scale-95 transition-all">
+          <i class="fa-solid fa-arrow-left"></i> 뒤로가기
+        </button>
+
+        <div class="w-10 h-1 bg-slate-600 rounded-full opacity-60"></div>
+
+        <button onclick="closeInfoPanel()" class="w-7 h-7 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center transition-all">
+          <i class="fa-solid fa-xmark text-sm"></i>
+        </button>
+      </div>
+
+      <!-- Panel Dynamic Content Body -->
+      <div id="panelContent" class="p-5 overflow-y-auto space-y-4 text-slate-200 hide-scrollbar">
+        <!-- JS Dynamic Injection -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Memo Modal (국가별 메모 입력 창) -->
+  <div id="memoModal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md hidden flex items-center justify-center p-4 pointer-events-auto">
+    <div class="w-full max-w-md glass-panel rounded-3xl p-5 border border-slate-700 shadow-2xl flex flex-col gap-4">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <button onclick="closeMemoModal()" class="flex items-center gap-1.5 text-xs font-semibold text-blue-400 hover:text-blue-300 py-1 px-2.5 rounded-lg bg-blue-500/10 border border-blue-500/20 active:scale-95 transition-all">
+          <i class="fa-solid fa-arrow-left"></i> 뒤로가기
+        </button>
+        <h3 id="memoModalTitle" class="text-sm font-bold text-slate-100 flex items-center gap-1.5">📝 국가 메모</h3>
+        <button onclick="closeMemoModal()" class="w-7 h-7 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center transition-all">
+          <i class="fa-solid fa-xmark text-sm"></i>
+        </button>
+      </div>
+
+      <div class="space-y-2">
+        <label for="memoInput" class="text-xs text-slate-400 block font-medium">나만의 메모 작성 (기기 DB 자동 보관)</label>
+        <textarea id="memoInput" rows="6" placeholder="이 국가에 대한 메모를 입력하세요..." class="w-full bg-slate-900/90 border border-slate-700/80 rounded-2xl p-3.5 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-amber-400 transition-all resize-none leading-relaxed"></textarea>
+      </div>
+
+      <div class="flex items-center justify-between gap-2 pt-1">
+        <button id="deleteMemoBtn" onclick="deleteMemo()" class="hidden px-3.5 py-2 rounded-xl bg-red-500/20 hover:bg-red-500/30 text-red-300 border border-red-500/30 text-xs font-semibold active:scale-95 transition-all flex items-center gap-1.5">
+          <i class="fa-solid fa-trash-can"></i> 삭제
+        </button>
+        <div class="flex items-center gap-2 ml-auto">
+          <button onclick="closeMemoModal()" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold active:scale-95 transition-all">
+            취소하기
+          </button>
+          <button onclick="saveMemo()" class="px-5 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-950 font-bold text-xs shadow-lg shadow-amber-500/20 active:scale-95 transition-all flex items-center gap-1.5">
+            <i class="fa-solid fa-floppy-disk"></i> 저장하기
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DB Backup & Import Modal (DB 파일 내보내기 / 올리기 관리 창) -->
+  <div id="dbModal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md hidden flex items-center justify-center p-4 pointer-events-auto">
+    <div class="w-full max-w-md glass-panel rounded-3xl p-5 border border-slate-700 shadow-2xl flex flex-col gap-4">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <button onclick="closeDbModal()" class="flex items-center gap-1.5 text-xs font-semibold text-blue-400 hover:text-blue-300 py-1 px-2.5 rounded-lg bg-blue-500/10 border border-blue-500/20 active:scale-95 transition-all">
+          <i class="fa-solid fa-arrow-left"></i> 뒤로가기
+        </button>
+        <h3 class="text-sm font-bold text-amber-300 flex items-center gap-1.5"><i class="fa-solid fa-database"></i> 메모 DB 파일 관리</h3>
+        <button onclick="closeDbModal()" class="w-7 h-7 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center transition-all">
+          <i class="fa-solid fa-xmark text-sm"></i>
+        </button>
+      </div>
+
+      <div class="space-y-3">
+        <div class="p-3.5 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-2">
+          <h4 class="text-xs font-bold text-white flex items-center gap-1.5"><i class="fa-solid fa-download text-amber-400"></i> DB 다운로드 (백업 파일 저장)</h4>
+          <p class="text-[11px] text-slate-400 leading-relaxed">작성한 모든 국가 메모 데이터를 <code>globe_memos.json</code> 파일로 다운로드하여 백업합니다.</p>
+          <button onclick="downloadMemoDB()" class="w-full py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs flex items-center justify-center gap-1.5 active:scale-95 transition-all">
+            <i class="fa-solid fa-file-arrow-down"></i> DB 파일 다운로드
+          </button>
+        </div>
+
+        <div class="p-3.5 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-2">
+          <h4 class="text-xs font-bold text-white flex items-center gap-1.5"><i class="fa-solid fa-upload text-cyan-400"></i> DB 파일 올리기 (복원)</h4>
+          <p class="text-[11px] text-slate-400 leading-relaxed">기존에 백업한 DB 파일(<code>.json</code>)을 선택하여 이 기기의 어플 DB로 다시 올립니다.</p>
+          <input type="file" id="dbFileInput" accept=".json" onchange="uploadMemoDB(event)" class="hidden">
+          <button onclick="document.getElementById('dbFileInput').click()" class="w-full py-2.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-xs flex items-center justify-center gap-1.5 active:scale-95 transition-all">
+            <i class="fa-solid fa-file-arrow-up"></i> DB 파일 선택하여 올리기
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Box -->
+  <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 opacity-0 pointer-events-none transition-opacity duration-300 glass-panel px-4 py-2 rounded-full text-xs font-medium text-slate-200 border border-blue-500/30 shadow-xl">
+    안내 메세지
+  </div>
+
+  <!-- Main Application Script -->
+  <script>
+    // PWA Service Worker 등록
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js').catch(() => {});
+      });
+    }
+
+    // ==========================================
+    // DEVICE LOCAL DATABASE (STORAGE ENGINE)
+    // ==========================================
+    const DB_KEY = "3d_globe_memos_v1";
+
+    function loadAllMemos() {
+      try {
+        const raw = localStorage.getItem(DB_KEY);
+        return raw ? JSON.parse(raw) : {};
+      } catch (e) {
+        return {};
+      }
+    }
+
+    function saveAllMemos(dataObj) {
+      try {
+        localStorage.setItem(DB_KEY, JSON.stringify(dataObj));
+      } catch (e) {
+        console.warn("DB 저장 실패:", e);
+      }
+    }
+
+    function getMemoForCountry(isoCode) {
+      const memos = loadAllMemos();
+      return memos[isoCode] || null;
+    }
+
+    function saveMemoForCountry(isoCode, text) {
+      const memos = loadAllMemos();
+      const nowStr = new Date().toLocaleDateString("ko-KR", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
+      memos[isoCode] = { text: text, updatedAt: nowStr, isoCode: isoCode };
+      saveAllMemos(memos);
+      return memos[isoCode];
+    }
+
+    function deleteMemoForCountry(isoCode) {
+      const memos = loadAllMemos();
+      delete memos[isoCode];
+      saveAllMemos(memos);
+    }
+
+    // ==========================================
+    // 1. DATA DEFINITIONS & GLOBAL COUNTRY MAP
+    // ==========================================
+    const GLOBAL_COUNTRY_MAP = {
+      "ATA": { countryName: "남극 (Antarctica)", capital: "연구 기지 (Research Stations)", flag: "🇦🇶", continent: "남극 대륙", lat: -82.8628, lon: 135.0000, description: "지구 최남단에 위치한 거대한 얼음 대륙으로 각국의 과학 연구 기지들이 운영되고 있습니다." },
+      "NER": { countryName: "니제르 (Niger)", capital: "니아메 (Niamey)", flag: "🇳🇪", continent: "아프리카", lat: 17.6078, lon: 8.0817, description: "서아프리카 내륙에 위치한 사하라 사막의 넓은 영토 국가입니다." },
+      "MLI": { countryName: "말리 (Mali)", capital: "바마코 (Bamako)", flag: "🇲🇱", continent: "아프리카", lat: 17.5707, lon: -3.9962, description: "서아프리카에 위치한 고대 고요한 대륙 국가입니다." },
+      "TCD": { countryName: "차드 (Chad)", capital: "은자메나 (N'Djamena)", flag: "🇹🇩", continent: "아프리카", lat: 15.4542, lon: 18.7322, description: "중앙아프리카에 위치한 사막과 사바나 지대의 내륙국입니다." },
+      "SDN": { countryName: "수단 (Sudan)", capital: "카르툼 (Khartoum)", flag: "🇸🇩", continent: "아프리카", lat: 12.8628, lon: 30.2176, description: "나일 강이 흐르는 북동아프리카 국가입니다." },
+      "SSD": { countryName: "남수단 (South Sudan)", capital: "주바 (Juba)", flag: "🇸🇸", continent: "아프리카", lat: 6.8769, lon: 31.3069, description: "동아프리카 내륙에 위치한 신생 독립국입니다." },
+      "ISL": { countryName: "아이슬란드 (Iceland)", capital: "레이캬비크 (Reykjavik)", flag: "🇮🇸", continent: "유럽", lat: 64.9631, lon: -19.0208, description: "화산과 빙하, 온천으로 유명한 북유럽의 아름다운 섬나라입니다." },
+      "GRL": { countryName: "그린란드 (Greenland)", capital: "누크 (Nuuk)", flag: "🇬🇱", continent: "북아메리카", lat: 71.7069, lon: -42.6043, description: "지구상에서 가장 큰 섬으로 웅장한 빙하와 피오르가 펼쳐진 지역입니다." },
+      "NOR": { countryName: "노르웨이 (Norway)", capital: "오슬로 (Oslo)", flag: "🇳🇴", continent: "유럽", lat: 60.4720, lon: 8.4689, description: "웅장한 피오르 해안선과 오로라로 유명한 스칸디나비아 국가입니다." },
+      "SWE": { countryName: "스웨덴 (Sweden)", capital: "스톡홀름 (Stockholm)", flag: "🇸🇪", continent: "유럽", lat: 60.1281, lon: 18.6435, description: "아름다운 호수와 숲, 혁신적인 복지로 알려진 북유럽 국가입니다." },
+      "FIN": { countryName: "핀란드 (Finland)", capital: "헬싱키 (Helsinki)", flag: "🇫🇮", continent: "유럽", lat: 61.9241, lon: 25.7482, description: "산타클로스의 고향이자 자작나무 숲과 호수의 나라입니다." },
+      "DNK": { countryName: "덴마크 (Denmark)", capital: "코펜하겐 (Copenhagen)", flag: "🇩🇰", continent: "유럽", lat: 56.2639, lon: 9.5018, description: "동화 작가 안데르센의 고향이자 유틀란트 반도의 북유럽 국가입니다." },
+      "POL": { countryName: "폴란드 (Poland)", capital: "바르샤바 (Warsaw)", flag: "🇵🇱", continent: "유럽", lat: 51.9194, lon: 19.1451, description: "쇼팽의 음악과 풍부한 역사를 지닌 동유럽 국가입니다." },
+      "NLD": { countryName: "네덜란드 (Netherlands)", capital: "암스테르담 (Amsterdam)", flag: "🇳🇱", continent: "유럽", lat: 52.1326, lon: 5.2913, description: "풍차와 튤립, 운하 도시 암스테르담의 서유럽 국가입니다." },
+      "BEL": { countryName: "벨기에 (Belgium)", capital: "브뤼셀 (Brussels)", flag: "🇧🇪", continent: "유럽", lat: 50.5039, lon: 4.4699, description: "EU 본부가 위치한 유럽의 중심 국가입니다." },
+      "CHE": { countryName: "스위스 (Switzerland)", capital: "베른 (Bern)", flag: "🇨🇭", continent: "유럽", lat: 46.8181, lon: 8.2275, description: "알프스 산맥과 평화로운 호수가 펼쳐진 영세중립국입니다." },
+      "AUT": { countryName: "오스트리아 (Austria)", capital: "빈 (Vienna)", flag: "🇦🇹", continent: "유럽", lat: 47.5162, lon: 14.5501, description: "클래식 음악의 거장들이 탄생한 예술의 나라입니다." },
+      "CZE": { countryName: "체코 (Czech Republic)", capital: "프라하 (Prague)", flag: "🇨🇿", continent: "유럽", lat: 49.8175, lon: 15.4730, description: "중세 고성 건축물과 아름다운 야경의 동유럽 국가입니다." },
+      "HUN": { countryName: "헝가리 (Hungary)", capital: "부다페스트 (Budapest)", flag: "🇭🇺", continent: "유럽", lat: 47.1625, lon: 19.5033, description: "다뉴브 강의 야경과 온천 문화가 발달한 중앙유럽 국가입니다." },
+      "GRC": { countryName: "그리스 (Greece)", capital: "아테네 (Athens)", flag: "🇬🇷", continent: "유럽", lat: 39.0742, lon: 21.8243, description: "서양 문명의 발상지이자 고대 신화의 나라입니다." },
+      "TUR": { countryName: "튀르키예 (Turkey)", capital: "앙카라 (Ankara)", flag: "🇹🇷", continent: "유라시아", lat: 38.9637, lon: 35.2433, description: "동양과 서양이 만나는 유서 깊은 가교 국가입니다." },
+      "PRT": { countryName: "포르투갈 (Portugal)", capital: "리스본 (Lisbon)", flag: "🇵🇹", continent: "유럽", lat: 39.3998, lon: -8.2244, description: "이베리아 반도 서쪽에 위치한 해양 탐험의 나라입니다." },
+      "IRL": { countryName: "아일랜드 (Ireland)", capital: "더블린 (Dublin)", flag: "🇮🇪", continent: "유럽", lat: 53.4129, lon: -8.2439, description: "초록빛 초원과 독특한 켈트 문화의 섬나라입니다." },
+      "UKR": { countryName: "우크라이나 (Ukraine)", capital: "키이우 (Kyiv)", flag: "🇺🇦", continent: "유럽", lat: 48.3794, lon: 31.1655, description: "동유럽의 광활한 곡창 지대를 가진 나라입니다." },
+      "ROU": { countryName: "루마니아 (Romania)", capital: "부쿠레슈티 (Bucharest)", flag: "🇷🇴", continent: "유럽", lat: 45.9431, lon: 24.9667, description: "카르파티아 산맥과 트란실바니아로 유명합니다." },
+      "BGR": { countryName: "불가리아 (Bulgaria)", capital: "소피아 (Sofia)", flag: "🇧🇬", continent: "유럽", lat: 42.7339, lon: 25.4858, description: "장미 오일과 발칸 산맥의 아름다운 국가입니다." },
+      "SVK": { countryName: "슬로바키아 (Slovakia)", capital: "브라티슬라바 (Bratislava)", flag: "🇸🇰", continent: "유럽", lat: 48.6690, lon: 19.6990, description: "타트라 산맥과 고성 유적이 아름다운 내륙국입니다." },
+      "HRV": { countryName: "크로아티아 (Croatia)", capital: "자그레브 (Zagreb)", flag: "🇭🇷", continent: "유럽", lat: 45.1000, lon: 15.2000, description: "아드리아 해의 보석 두브로브니크의 나라입니다." },
+      "MNG": { countryName: "몽골 (Mongolia)", capital: "울란바토르 (Ulaanbaatar)", flag: "🇲🇳", continent: "아시아", lat: 46.8625, lon: 103.8467, description: "고비 사막과 대초원 유목 문화의 국가입니다." },
+      "THA": { countryName: "태국 (Thailand)", capital: "방콕 (Bangkok)", flag: "🇹🇭", continent: "아시아", lat: 15.8700, lon: 100.9925, description: "불교 사원과 미식, 해변 휴양지의 나라입니다." },
+      "IDN": { countryName: "인도네시아 (Indonesia)", capital: "자카르타 (Jakarta)", flag: "🇮🇩", continent: "아시아", lat: -0.7893, lon: 113.9213, description: "세계 최대의 도서 국가로 발리와 수마트라가 유명합니다." },
+      "PHL": { countryName: "필리핀 (Philippines)", capital: "마닐라 (Manila)", flag: "🇵🇭", continent: "아시아", lat: 12.8797, lon: 121.7740, description: "7,000여 개의 섬으로 구성된 서태평양 국가입니다." },
+      "MYS": { countryName: "말레이시아 (Malaysia)", capital: "쿠알라룸푸르 (Kuala Lumpur)", flag: "🇲🇾", continent: "아시아", lat: 4.2105, lon: 101.9758, description: "페트로나스 타워와 다문화가 공존하는 국가입니다." },
+      "KHM": { countryName: "캄보디아 (Cambodia)", capital: "프놈펜 (Phnom Penh)", flag: "🇰🇭", continent: "아시아", lat: 12.5657, lon: 104.9910, description: "앙코르와트 문화유산을 품고 있는 나라입니다." },
+      "LAO": { countryName: "라오스 (Laos)", capital: "비엔티안 (Vientiane)", flag: "🇱🇦", continent: "아시아", lat: 19.8563, lon: 102.4955, description: "메콩 강이 흐르는 순수한 동남아시아 내륙국입니다." },
+      "MMR": { countryName: "미얀마 (Myanmar)", capital: "네피도 (Naypyidaw)", flag: "🇲🇲", continent: "아시아", lat: 21.9162, lon: 95.9560, description: "황금 파고다 사원과 바간 유적의 나라입니다." },
+      "LKA": { countryName: "스리랑카 (Sri Lanka)", capital: "스리자야와르데네푸라코테 (Sri Jayawardenepura Kotte)", flag: "🇱🇰", continent: "아시아", lat: 7.8730, lon: 80.7717, description: "실론 티와 불교 유적이 풍부한 인도양 섬나라입니다." },
+      "PAK": { countryName: "파키스탄 (Pakistan)", capital: "이스라마바드 (Islamabad)", flag: "🇵🇰", continent: "아시아", lat: 30.3753, lon: 69.3451, description: "K2 등 웅장한 히말라야 산봉우리들의 나라입니다." },
+      "BGD": { countryName: "방글라데시 (Bangladesh)", capital: "다카 (Dhaka)", flag: "🇧🇩", continent: "아시아", lat: 23.6850, lon: 90.3563, description: "갠지스 삼각주 지형의 남아시아 국가입니다." },
+      "IRN": { countryName: "이란 (Iran)", capital: "테헤란 (Tehran)", flag: "🇮🇷", continent: "중동", lat: 32.4279, lon: 53.6880, description: "고대 페르시아 문명의 역사 유적을 가진 중동국가입니다." },
+      "IRQ": { countryName: "이라크 (Iraq)", capital: "바그다드 (Baghdad)", flag: "🇮🇶", continent: "중동", lat: 33.2232, lon: 43.6793, description: "메소포타미아 문명 발상지의 티그리스 강 국가입니다." },
+      "ISR": { countryName: "이스라엘 (Israel)", capital: "예루살렘 (Jerusalem)", flag: "🇮🇱", continent: "중동", lat: 31.0461, lon: 34.8516, description: "3대 종교의 성지 예루살렘의 국가입니다." },
+      "ARE": { countryName: "아랍에미리트 (United Arab Emirates)", capital: "아부다비 (Abu Dhabi)", flag: "🇦🇪", continent: "중동", lat: 23.4240, lon: 53.8478, description: "두바이 등 초현대적 도시들이 자리한 나라입니다." },
+      "QAT": { countryName: "카타르 (Qatar)", capital: "도하 (Doha)", flag: "🇶🇦", continent: "중동", lat: 25.3548, lon: 51.1838, description: "페르시아 만의 자원이 풍부한 반도 국가입니다." },
+      "JOR": { countryName: "요르단 (Jordan)", capital: "암만 (Amman)", flag: "🇯🇴", continent: "중동", lat: 30.5852, lon: 36.2384, description: "페트라 유적과 사해로 유명한 나라입니다." },
+      "MAR": { countryName: "모로코 (Morocco)", capital: "라바트 (Rabat)", flag: "🇲🇦", continent: "아프리카", lat: 31.7917, lon: -7.0926, description: "카사블랑카와 사하라 관문의 북아프리카 국가입니다." },
+      "DZA": { countryName: "알제리 (Algeria)", capital: "알제 (Algiers)", flag: "🇩🇿", continent: "아프리카", lat: 28.0339, lon: 1.6596, description: "아프리카 대륙에서 면적이 가장 넓은 국가입니다." },
+      "TUN": { countryName: "튀니지 (Tunisia)", capital: "튀니스 (Tunis)", flag: "🇹🇳", continent: "아프리카", lat: 33.8869, lon: 9.5374, description: "고대 카르타고 유적의 지중해 국가입니다." },
+      "KEN": { countryName: "케냐 (Kenya)", capital: "나이로비 (Nairobi)", flag: "🇰🇪", continent: "아프리카", lat: -1.2921, lon: 36.8219, description: "마사이마라 사파리로 유명한 동아프리카 대표국입니다." },
+      "TZA": { countryName: "탄자니아 (Tanzania)", capital: "도도마 (Dodoma)", flag: "🇹🇿", continent: "아프리카", lat: -6.3690, lon: 34.8888, description: "킬리만자로산과 세렝게티 초원의 나라입니다." },
+      "ETH": { countryName: "에티오피아 (Ethiopia)", capital: "아디스아바바 (Addis Ababa)", flag: "🇪🇹", continent: "아프리카", lat: 9.1450, lon: 40.4897, description: "커피의 발상지이자 역사를 자랑하는 나라입니다." },
+      "NGA": { countryName: "나이지리아 (Nigeria)", capital: "아부자 (Abuja)", flag: "🇳🇬", continent: "아프리카", lat: 9.0820, lon: 8.6753, description: "아프리카 최대의 인구와 경제 규모를 지닌 국가입니다." },
+      "PER": { countryName: "페루 (Peru)", capital: "리마 (Lima)", flag: "🇵🇪", continent: "남아메리카", lat: -9.1899, lon: -75.0151, description: "잉카 문명 마추픽추와 안데스의 나라입니다." },
+      "CHL": { countryName: "칠레 (Chile)", capital: "산티아고 (Santiago)", flag: "🇨🇱", continent: "남아메리카", lat: -35.6751, lon: -71.5430, description: "남북으로 4,300km 이상 길게 늘어선 해안 국가입니다." },
+      "COL": { countryName: "콜롬비아 (Colombia)", capital: "보고타 (Bogota)", flag: "🇨🇴", continent: "남아메리카", lat: 4.5709, lon: -74.2973, description: "최상급 커피 생산과 카리브 해안의 나라입니다." },
+      "ECU": { countryName: "에콰도르 (Ecuador)", capital: "키토 (Quito)", flag: "🇪🇨", continent: "남아메리카", lat: -1.8312, lon: -78.1834, description: "적도선이 관통하며 갈라파고스를 품은 나라입니다." },
+      "BOL": { countryName: "볼리비아 (Bolivia)", capital: "수크레 (Sucre)", flag: "🇧🇴", continent: "남아메리카", lat: -16.2902, lon: -63.5887, description: "세계 최대 우유니 소금 사막의 나라입니다." },
+      "NZL": { countryName: "뉴질랜드 (New Zealand)", capital: "웰링턴 (Wellington)", flag: "🇳🇿", continent: "오세아니아", lat: -40.9006, lon: 174.8860, description: "대자연과 마오리 문화의 오세아니아 국가입니다." },
+      "KAZ": { countryName: "카자흐스탄 (Kazakhstan)", capital: "아스타나 (Astana)", flag: "🇰🇿", continent: "중앙아시아", lat: 48.0196, lon: 66.9237, description: "세계 최대의 내륙 스텝 국가입니다." },
+      "UZB": { countryName: "우즈베키스탄 (Uzbekistan)", capital: "타슈켄트 (Tashkent)", flag: "🇺🇿", continent: "중앙아시아", lat: 41.3774, lon: 64.5852, description: "실크로드 거점 도시 사마르칸트의 나라입니다." },
+      "GEO": { countryName: "조지아 (Georgia)", capital: "트빌리시 (Tbilisi)", flag: "🇬🇪", continent: "유라시아", lat: 42.3154, lon: 43.3569, description: "코카서스 산맥과 와인 역사의 나라입니다." },
+      "EST": { countryName: "에스토니아 (Estonia)", capital: "탈린 (Tallinn)", flag: "🇪🇪", continent: "유럽", lat: 58.5953, lon: 25.0136, description: "발트 3국 최북단 IT 강국입니다." },
+      "LVA": { countryName: "라트비아 (Latvia)", capital: "리가 (Riga)", flag: "🇱🇻", continent: "유럽", lat: 56.8796, lon: 24.6032, description: "발트 해 연안 아르누보 건축의 나라입니다." },
+      "LTU": { countryName: "리투아니아 (Lithuania)", capital: "빌뉴스 (Vilnius)", flag: "🇱🇹", continent: "유럽", lat: 55.1694, lon: 23.8813, description: "발트 3국의 유서 깊은 국가입니다." },
+      "CUB": { countryName: "쿠바 (Cuba)", capital: "아바나 (Havana)", flag: "🇨🇺", continent: "북아메리카", lat: 21.5218, lon: -77.7812, description: "카리브해의 올드 아바나 문화 나라입니다." },
+      "PRK": { countryName: "북한 (North Korea)", capital: "평양 (Pyongyang)", flag: "🇰🇵", continent: "아시아", lat: 40.3399, lon: 127.5101, description: "한반도 북부 지역입니다." },
+      "TWN": { countryName: "대만 (Taiwan)", capital: "타이베이 (Taipei)", flag: "🇹🇼", continent: "아시아", lat: 23.6978, lon: 120.9605, description: "동아시아 IT 및 미식의 섬나라입니다." }
+    };
+
+    const ENGLISH_NAME_MAP = {
+      "Antarctica": "남극", "French Southern Territories": "프랑스령 남방 및 남극 지역",
+      "Niger": "니제르", "Mali": "말리", "Chad": "차드", "Sudan": "수단", "South Sudan": "남수단",
+      "Central African Republic": "중앙아프리카 공화국", "Somalia": "소말리아", "Iceland": "아이슬란드",
+      "Greenland": "그린란드", "Norway": "노르웨이", "Sweden": "스웨덴", "Finland": "핀란드",
+      "Denmark": "덴마크", "Estonia": "에스토니아", "Latvia": "라트비아", "Lithuania": "리투아니아"
+    };
+
+    const LOCATIONS = [
+      {
+        id: "kr", isoCode: "KOR", countryName: "대한민국 (South Korea)", name: "대한민국 (South Korea)", category: "country", flag: "🇰🇷", capital: "서울 (Seoul)", lat: 37.5665, lon: 126.9780, continent: "아시아",
+        landmarks: [
+          { name: "한라산", type: "🏔️ 산", desc: "제주도 중앙에 위치한 대한민국 최고봉(1,947m)입니다." },
+          { name: "한강", type: "🌊 강", desc: "수도 서울의 중심을 관통해 흐르는 대표 젖줄입니다." }
+        ],
+        description: "동아시아 한반도 남부에 위치한 대표적인 IT, 문화, 경제 강국입니다."
+      },
+      { id: "is", isoCode: "ISL", countryName: "아이슬란드 (Iceland)", name: "아이슬란드 (Iceland)", category: "country", flag: "🇮🇸", capital: "레이캬비크 (Reykjavik)", lat: 64.9631, lon: -19.0208, continent: "유럽", description: "화산과 빙하, 온천으로 유명한 환상적인 섬나라입니다." },
+      { id: "gl", isoCode: "GRL", countryName: "그린란드 (Greenland)", name: "그린란드 (Greenland)", category: "country", flag: "🇬🇱", capital: "누크 (Nuuk)", lat: 71.7069, lon: -42.6043, continent: "북아메리카", description: "지구상에서 가장 큰 섬으로 빙하가 펼쳐진 지역입니다." },
+      { id: "no", isoCode: "NOR", countryName: "노르웨이 (Norway)", name: "노르웨이 (Norway)", category: "country", flag: "🇳🇴", capital: "오슬로 (Oslo)", lat: 60.4720, lon: 8.4689, continent: "유럽", description: "웅장한 피오르 해안선과 오로라의 나라입니다." },
+      { id: "jp", isoCode: "JPN", countryName: "일본 (Japan)", name: "일본 (Japan)", category: "country", flag: "🇯🇵", capital: "도쿄 (Tokyo)", lat: 35.6762, lon: 139.6503, continent: "아시아", description: "동아시아 태평양에 위치한 섬나라입니다." },
+      { id: "cn", isoCode: "CHN", countryName: "중국 (China)", name: "중국 (China)", category: "country", flag: "🇨🇳", capital: "베이징 (Beijing)", lat: 39.9042, lon: 116.4074, continent: "아시아", description: "동아시아의 광활한 대륙 영토를 지닌 국가입니다." },
+      { id: "us", isoCode: "USA", countryName: "미국 (United States)", name: "미국 (United States)", category: "country", flag: "🇺🇸", capital: "워싱턴 D.C.", lat: 38.9072, lon: -77.0369, continent: "북아메리카", description: "북아메리카 대륙의 넓은 영토에 위치한 연방 공화국입니다." },
+      { id: "ca", isoCode: "CAN", countryName: "캐나다 (Canada)", name: "캐나다 (Canada)", category: "country", flag: "🇨🇦", capital: "오타와 (Ottawa)", lat: 45.4215, lon: -75.6972, continent: "북아메리카", description: "웅장한 국립공원과 호수가 펼쳐진 면적 2위 국가입니다." },
+      { id: "br", isoCode: "BRA", countryName: "브라질 (Brazil)", name: "브라질 (Brazil)", category: "country", flag: "🇧🇷", capital: "브라질리아 (Brasília)", lat: -15.7975, lon: -47.8919, continent: "남아메리카", description: "남아메리카 대륙의 절반가량을 차지하는 열정의 나라입니다." },
+      { id: "fr", isoCode: "FRA", countryName: "프랑스 (France)", name: "프랑스 (France)", category: "country", flag: "🇫🇷", capital: "파리 (Paris)", lat: 48.8566, lon: 2.3522, continent: "유럽", description: "서유럽의 예술, 문화, 요리의 선두 국가입니다." },
+      { id: "uk", isoCode: "GBR", countryName: "영국 (United Kingdom)", name: "영국 (United Kingdom)", category: "country", flag: "🇬🇧", capital: "런던 (London)", lat: 51.5074, lon: -0.1278, continent: "유럽", description: "유럽 서북부의 전통 깊은 섬나라입니다." },
+      { id: "de", isoCode: "DEU", countryName: "독일 (Germany)", name: "독일 (Germany)", category: "country", flag: "🇩🇪", capital: "베를린 (Berlin)", lat: 52.5200, lon: 13.4050, continent: "유럽", description: "중앙유럽의 대표적인 경제 및 기술 강국입니다." },
+      { id: "eg", isoCode: "EGY", countryName: "이집트 (Egypt)", name: "이집트 (Egypt)", category: "country", flag: "🇪🇬", capital: "카이로 (Cairo)", lat: 30.0444, lon: 31.2357, continent: "아프리카", description: "피라미드 문명이 숨 쉬는 북동 아프리카 중심국입니다." },
+      { id: "au", isoCode: "AUS", countryName: "호주 (Australia)", name: "호주 (Australia)", category: "country", flag: "🇦🇺", capital: "캔버라 (Canberra)", lat: -35.2809, lon: 149.1300, continent: "오세아니아", description: "대륙 전체를 영토로 하는 청정 자연의 나라입니다." },
+      { id: "ru", isoCode: "RUS", countryName: "러시아 (Russia)", name: "러시아 (Russia)", category: "country", flag: "🇷🇺", capital: "모스크바 (Moscow)", lat: 55.7558, lon: 37.6173, continent: "유라시아", description: "지구 표면의 넓은 영토를 지닌 세계 최대 면적 국가입니다." }
+    ];
+
+    const locationMap = new Map(LOCATIONS.map(loc => [loc.id, loc]));
+    const isoToLocMap = new Map(LOCATIONS.map(loc => [loc.isoCode, loc]));
+
+    function getCountryInfo(isoCode, rawName) {
+      const loc = isoToLocMap.get(isoCode);
+      if (loc) return loc;
+
+      const globalItem = GLOBAL_COUNTRY_MAP[isoCode];
+      if (globalItem) {
+        return {
+          countryName: globalItem.countryName,
+          capital: globalItem.capital,
+          flag: globalItem.flag || "🏳️",
+          continent: globalItem.continent || "지구 대륙",
+          description: globalItem.description || `${globalItem.countryName} 영역입니다.`,
+          landmarks: [],
+          lat: globalItem.lat,
+          lon: globalItem.lon,
+          isoCode: isoCode,
+          id: isoCode ? isoCode.toLowerCase() : "unknown"
+        };
+      }
+
+      const cleanRaw = rawName ? rawName.trim() : "";
+      const translatedName = ENGLISH_NAME_MAP[cleanRaw];
+      const formattedCountry = translatedName ? `${translatedName} (${cleanRaw})` : `${cleanRaw || isoCode || "영토"} (${isoCode || "Territory"})`;
+
+      return {
+        countryName: formattedCountry,
+        capital: formattedCountry,
+        flag: "🏳️",
+        continent: "지구 대륙",
+        description: `${formattedCountry} 영역입니다.`,
+        landmarks: [],
+        isoCode: isoCode,
+        id: isoCode ? isoCode.toLowerCase() : "unknown"
+      };
+    }
+
+    // ==========================================
+    // 2. THREE.JS SCENE & ROTATION ENGINE
+    // ==========================================
+    const GLOBE_RADIUS = 5;
+    let scene, camera, renderer;
+    let globeGroup, globeMesh, atmosphereMesh;
+    let dirLight, ambientLight;
+
+    let borderGroup;
+    let geoFeatures = [];
+    let highlightCanvas, highlightTexture, highlightMesh;
+
+    let markers = [];
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2();
+
+    let isDayMode = true;
+    let showBorders = true;
+    let activeFilter = "all";
+    let hoveredIsoCode = null;
+    let selectedIsoCode = null;
+    let currentEditingIsoCode = null;
+
+    let preSelectionCamZ = null;
+
+    let activePointerId = null;
+    let isPointerDown = false;
+    let lastPointerPos = { x: 0, y: 0 };
+    let pointerDownPos = { x: 0, y: 0 };
+    let isDraggingGlobe = false;
+    let isAutoRotate = false;
+    let isFocusingAnimation = false;
+
+    let currentRotationVelocity = { x: 0, y: 0 };
+    let initialPinchDist = 0, initialCamZ = 16;
+
+    const tempVec = new THREE.Vector3();
+    const cameraWorldPos = new THREE.Vector3();
+
+    function init3D() {
+      const container = document.getElementById("canvas-container");
+
+      scene = new THREE.Scene();
+      camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+      camera.position.set(0, 0, 16);
+
+      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: "high-performance" });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.toneMapping = THREE.ACESFilmicToneMapping;
+      renderer.toneMappingExposure = 1.2;
+      container.appendChild(renderer.domElement);
+
+      globeGroup = new THREE.Group();
+      scene.add(globeGroup);
+
+      ambientLight = new THREE.AmbientLight(0xffffff, 0.75);
+      scene.add(ambientLight);
+
+      dirLight = new THREE.DirectionalLight(0xffffff, 1.2);
+      dirLight.position.set(12, 10, 10);
+      scene.add(dirLight);
+
+      createStars();
+      createGlobe();
+      initHighlightLayer();
+      loadGeoJSONBorders();
+      createMarkers();
+
+      window.addEventListener("resize", onWindowResize);
+
+      window.addEventListener("pointerdown", (e) => {
+        if (e.button !== 0 && e.pointerType === "mouse") return;
+        if (e.touches && e.touches.length > 1) {
+          isPointerDown = false;
+          activePointerId = null;
+          return;
+        }
+
+        activePointerId = e.pointerId;
+        isPointerDown = true;
+        lastPointerPos = { x: e.clientX, y: e.clientY };
+        pointerDownPos = { x: e.clientX, y: e.clientY };
+        isDraggingGlobe = false;
+        currentRotationVelocity = { x: 0, y: 0 };
+      });
+
+      window.addEventListener("pointermove", (e) => {
+        onPointerMove(e);
+
+        if (!isPointerDown || e.pointerId !== activePointerId) return;
+        if (e.touches && e.touches.length > 1) {
+          isPointerDown = false;
+          activePointerId = null;
+          return;
+        }
+
+        let deltaX = e.clientX - lastPointerPos.x;
+        let deltaY = e.clientY - lastPointerPos.y;
+        lastPointerPos = { x: e.clientX, y: e.clientY };
+
+        const dragDist = Math.hypot(e.clientX - pointerDownPos.x, e.clientY - pointerDownPos.y);
+        if (dragDist > 8) isDraggingGlobe = true;
+
+        const maxDelta = 28;
+        deltaX = Math.max(-maxDelta, Math.min(maxDelta, deltaX));
+        deltaY = Math.max(-maxDelta, Math.min(maxDelta, deltaY));
+
+        const sensitivity = 0.0075;
+        const stepX = deltaX * sensitivity;
+        const stepY = deltaY * sensitivity;
+
+        applyGlobeRotation(stepX, stepY);
+        currentRotationVelocity = { x: stepX, y: stepY };
+      });
+
+      const onPointerEnd = (e) => {
+        if (e.pointerId === activePointerId || !e.pointerId) {
+          isPointerDown = false;
+          activePointerId = null;
+        }
+      };
+      window.addEventListener("pointerup", onPointerEnd);
+      window.addEventListener("pointercancel", onPointerEnd);
+
+      window.addEventListener("wheel", (e) => {
+        const delta = e.deltaY > 0 ? 0.9 : -0.9;
+        camera.position.z = THREE.MathUtils.clamp(camera.position.z + delta, 6.2, 25);
+      }, { passive: true });
+
+      window.addEventListener("touchstart", (e) => {
+        if (e.touches.length === 2) {
+          isPointerDown = false;
+          activePointerId = null;
+          initialPinchDist = Math.hypot(
+            e.touches[0].clientX - e.touches[1].clientX,
+            e.touches[0].clientY - e.touches[1].clientY
+          );
+          initialCamZ = camera.position.z;
+        }
+      });
+
+      window.addEventListener("touchmove", (e) => {
+        if (e.touches.length === 2 && initialPinchDist > 0) {
+          const dist = Math.hypot(
+            e.touches[0].clientX - e.touches[1].clientX,
+            e.touches[0].clientY - e.touches[1].clientY
+          );
+          const factor = initialPinchDist / dist;
+          camera.position.z = THREE.MathUtils.clamp(initialCamZ * factor, 6.2, 25);
+        }
+      });
+
+      renderer.domElement.addEventListener("click", onGlobeClick);
+
+      animate();
+      focusLocation(37.5665, 126.9780, false);
+    }
+
+    function applyGlobeRotation(rotX, rotY) {
+      if (Math.abs(rotX) < 0.000001 && Math.abs(rotY) < 0.000001) return;
+
+      const qY = new THREE.Quaternion();
+      qY.setFromAxisAngle(new THREE.Vector3(0, 1, 0), rotX);
+
+      const qX = new THREE.Quaternion();
+      const cameraRight = new THREE.Vector3(1, 0, 0).applyQuaternion(camera.quaternion);
+      qX.setFromAxisAngle(cameraRight, rotY);
+
+      globeGroup.quaternion.premultiply(qY);
+      globeGroup.quaternion.premultiply(qX);
+    }
+
+    function createStars() {
+      const starGeometry = new THREE.BufferGeometry();
+      const count = 1200;
+      const positions = new Float32Array(count * 3);
+
+      for (let i = 0; i < count * 3; i += 3) {
+        positions[i] = (Math.random() - 0.5) * 220;
+        positions[i + 1] = (Math.random() - 0.5) * 220;
+        positions[i + 2] = (Math.random() - 0.5) * 220;
+      }
+
+      starGeometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+      const starMaterial = new THREE.PointsMaterial({ color: 0xffffff, size: 0.6, transparent: true, opacity: 0.75 });
+      scene.add(new THREE.Points(starGeometry, starMaterial));
+    }
+
+    function createProceduralEarthTexture() {
+      const canvas = document.createElement("canvas");
+      canvas.width = 2048;
+      canvas.height = 1024;
+      const ctx = canvas.getContext("2d");
+
+      const oceanGrad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+      oceanGrad.addColorStop(0, "#0b2545");
+      oceanGrad.addColorStop(0.5, "#134074");
+      oceanGrad.addColorStop(1, "#0b2545");
+      ctx.fillStyle = oceanGrad;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.fillStyle = "#2d6a4f";
+      ctx.strokeStyle = "#52b788";
+      ctx.lineWidth = 2;
+
+      function mapCoords(lon, lat) {
+        return { x: ((lon + 180) / 360) * canvas.width, y: ((90 - lat) / 180) * canvas.height };
+      }
+
+      function drawLandmass(points) {
+        ctx.beginPath();
+        points.forEach((pt, i) => {
+          const { x, y } = mapCoords(pt[0], pt[1]);
+          if (i === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        });
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+      }
+
+      drawLandmass([[30, 70], [140, 70], [140, 30], [128, 36], [126, 38], [120, 25], [100, 10], [70, 20], [40, 30], [10, 40], [10, 65]]);
+      drawLandmass([[-15, 35], [35, 35], [50, 10], [40, -30], [20, -35], [10, 0], [-15, 15]]);
+      drawLandmass([[-160, 70], [-60, 70], [-60, 45], [-80, 25], [-100, 20], [-120, 30], [-170, 60]]);
+      drawLandmass([[-80, 10], [-35, -5], [-40, -20], [-65, -55], [-75, -45], [-80, -10]]);
+      drawLandmass([[115, -15], [153, -15], [150, -38], [115, -35]]);
+
+      return new THREE.CanvasTexture(canvas);
+    }
+
+    function createGlobe() {
+      const geometry = new THREE.SphereGeometry(GLOBE_RADIUS, 64, 64);
+      const textureLoader = new THREE.TextureLoader();
+      const fallbackTexture = createProceduralEarthTexture();
+
+      const earthMaterial = new THREE.MeshPhongMaterial({
+        map: fallbackTexture,
+        shininess: 15,
+        specular: new THREE.Color(0x333333)
+      });
+
+      textureLoader.load(
+        'https://unpkg.com/three-globe/example/img/earth-blue-marble.jpg',
+        (tex) => {
+          earthMaterial.map = tex;
+          earthMaterial.needsUpdate = true;
+        },
+        undefined, () => {}
+      );
+
+      globeMesh = new THREE.Mesh(geometry, earthMaterial);
+      globeGroup.add(globeMesh);
+
+      const atmosGeometry = new THREE.SphereGeometry(GLOBE_RADIUS * 1.02, 64, 64);
+      const atmosMaterial = new THREE.MeshLambertMaterial({
+        color: 0x38bdf8,
+        transparent: true,
+        opacity: 0.18,
+        side: THREE.BackSide
+      });
+      atmosphereMesh = new THREE.Mesh(atmosGeometry, atmosMaterial);
+      globeGroup.add(atmosphereMesh);
+    }
+
+    function latLonToVector3(lat, lon, radius) {
+      const phi = (90 - lat) * (Math.PI / 180);
+      const theta = (lon + 180) * (Math.PI / 180);
+      const x = -(radius * Math.sin(phi) * Math.cos(theta));
+      const z = radius * Math.sin(phi) * Math.sin(theta);
+      const y = radius * Math.cos(phi);
+      return new THREE.Vector3(x, y, z);
+    }
+
+    function vector3ToLatLon(vec) {
+      const norm = vec.clone().normalize();
+      const phi = Math.acos(Math.max(-1, Math.min(1, norm.y)));
+      const lat = 90 - (phi * (180 / Math.PI));
+      const theta = Math.atan2(norm.z, -norm.x) * (180 / Math.PI);
+      let lon = theta - 180;
+      while (lon > 180) lon -= 360;
+      while (lon < -180) lon += 360;
+      return { lat, lon };
+    }
+
+    function initHighlightLayer() {
+      highlightCanvas = document.createElement("canvas");
+      highlightCanvas.width = 2048;
+      highlightCanvas.height = 1024;
+
+      highlightTexture = new THREE.CanvasTexture(highlightCanvas);
+      highlightTexture.minFilter = THREE.LinearFilter;
+      highlightTexture.magFilter = THREE.LinearFilter;
+
+      const highlightGeom = new THREE.SphereGeometry(GLOBE_RADIUS * 1.004, 64, 64);
+      const highlightMat = new THREE.MeshBasicMaterial({
+        map: highlightTexture,
+        transparent: true,
+        opacity: 0.95,
+        depthWrite: false,
+        side: THREE.FrontSide
+      });
+
+      highlightMesh = new THREE.Mesh(highlightGeom, highlightMat);
+      globeGroup.add(highlightMesh);
+    }
+
+    function drawHighlightTexture(isoCode, isSelected) {
+      if (!highlightCanvas) return;
+      const ctx = highlightCanvas.getContext("2d");
+      ctx.clearRect(0, 0, highlightCanvas.width, highlightCanvas.height);
+
+      if (!isoCode) {
+        highlightTexture.needsUpdate = true;
+        return;
+      }
+
+      const feature = geoFeatures.find(f => f.id === isoCode);
+      if (!feature) {
+        highlightTexture.needsUpdate = true;
+        return;
+      }
+
+      ctx.save();
+      if (isSelected) {
+        ctx.fillStyle = "rgba(6, 182, 212, 0.78)";
+        ctx.strokeStyle = "#FFFFFF";
+        ctx.shadowColor = "#00FFFF";
+      } else {
+        ctx.fillStyle = "rgba(250, 204, 21, 0.75)";
+        ctx.strokeStyle = "#FFFFFF";
+        ctx.shadowColor = "#FACC15";
+      }
+      ctx.lineWidth = 5;
+      ctx.shadowBlur = 16;
+
+      const drawRing = (ring) => {
+        ctx.beginPath();
+        for (let i = 0; i < ring.length; i++) {
+          const x = ((ring[i][0] + 180) / 360) * highlightCanvas.width;
+          const y = ((90 - ring[i][1]) / 180) * highlightCanvas.height;
+          if (i === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+      };
+
+      const geom = feature.geometry;
+      if (geom.type === "Polygon") geom.coordinates.forEach(drawRing);
+      else if (geom.type === "MultiPolygon") geom.coordinates.forEach(poly => poly.forEach(drawRing));
+
+      ctx.restore();
+      highlightTexture.needsUpdate = true;
+    }
+
+    function loadGeoJSONBorders() {
+      borderGroup = new THREE.Group();
+      globeGroup.add(borderGroup);
+
+      const borderMaterial = new THREE.LineBasicMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.8 });
+
+      fetch('https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json')
+        .then(res => res.json())
+        .then(data => {
+          geoFeatures = data.features;
+          geoFeatures.forEach(feature => {
+            const geom = feature.geometry;
+            if (geom.type === 'Polygon') geom.coordinates.forEach(ring => drawBorderRing(ring, borderGroup, borderMaterial));
+            else if (geom.type === 'MultiPolygon') geom.coordinates.forEach(polygon => polygon.forEach(ring => drawBorderRing(ring, borderGroup, borderMaterial)));
+          });
+        })
+        .catch(err => console.warn("GeoJSON 국경선 로드 실패:", err));
+    }
+
+    function drawBorderRing(ring, group, material) {
+      const points = [];
+      for (let i = 0; i < ring.length; i++) {
+        points.push(latLonToVector3(ring[i][1], ring[i][0], GLOBE_RADIUS * 1.006));
+      }
+      const geometry = new THREE.BufferGeometry().setFromPoints(points);
+      group.add(new THREE.Line(geometry, material));
+    }
+
+    function toggleBorders() {
+      showBorders = !showBorders;
+      if (borderGroup) borderGroup.visible = showBorders;
+      const btn = document.getElementById("btn-borders");
+      if (showBorders) {
+        btn.classList.add("bg-cyan-600/40", "border-cyan-400/50", "text-cyan-200");
+        showToast("국경 경계선 표시 ON");
+      } else {
+        btn.classList.remove("bg-cyan-600/40", "border-cyan-400/50", "text-cyan-200");
+        showToast("국경 경계선 표시 OFF");
+      }
+    }
+
+    function pointInPolygon(point, vs) {
+      const x = point[0], y = point[1];
+      let inside = false;
+      for (let i = 0, j = vs.length - 1; i < vs.length; j = i++) {
+        const xi = vs[i][0], yi = vs[i][1];
+        const xj = vs[j][0], yj = vs[j][1];
+        const intersect = ((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+        if (intersect) inside = !inside;
+      }
+      return inside;
+    }
+
+    function pointInGeoJSON(lon, lat, feature) {
+      const geom = feature.geometry;
+      if (geom.type === 'Polygon') return pointInPolygon([lon, lat], geom.coordinates[0]);
+      else if (geom.type === 'MultiPolygon') return geom.coordinates.some(poly => pointInPolygon([lon, lat], poly[0]));
+      return false;
+    }
+
+    function onPointerMove(event) {
+      mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+      mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+      const tooltip = document.getElementById("hoverTooltip");
+      tooltip.style.transform = `translate3d(${event.clientX + 14}px, ${event.clientY + 14}px, 0)`;
+
+      if (globeMesh) {
+        raycaster.setFromCamera(mouse, camera);
+        const intersects = raycaster.intersectObject(globeMesh);
+
+        if (intersects.length > 0) {
+          const localPoint = globeMesh.worldToLocal(intersects[0].point.clone());
+          const { lat, lon } = vector3ToLatLon(localPoint);
+          const hitFeature = geoFeatures.find(f => pointInGeoJSON(lon, lat, f));
+
+          if (hitFeature) {
+            const hitIsoCode = hitFeature.id;
+            if (hoveredIsoCode !== hitIsoCode) {
+              hoveredIsoCode = hitIsoCode;
+              drawHighlightTexture(hitIsoCode, hitIsoCode === selectedIsoCode);
+              const countryInfo = getCountryInfo(hitIsoCode, hitFeature.properties?.name);
+
+              document.getElementById("tooltipFlag").innerText = countryInfo.flag;
+              document.getElementById("tooltipName").innerText = countryInfo.countryName;
+              document.getElementById("tooltipCapital").innerText = `수도: ${countryInfo.capital}`;
+              tooltip.classList.remove("opacity-0");
+            }
+            document.body.style.cursor = "pointer";
+            return;
+          }
+        }
+      }
+
+      if (hoveredIsoCode && hoveredIsoCode !== selectedIsoCode) {
+        hoveredIsoCode = null;
+        drawHighlightTexture(selectedIsoCode, true);
+        tooltip.classList.add("opacity-0");
+      } else if (!hoveredIsoCode && !selectedIsoCode) {
+        tooltip.classList.add("opacity-0");
+      }
+      document.body.style.cursor = "default";
+    }
+
+    function onGlobeClick() {
+      if (isDraggingGlobe) return;
+
+      if (globeMesh) {
+        raycaster.setFromCamera(mouse, camera);
+        const intersects = raycaster.intersectObject(globeMesh);
+
+        if (intersects.length > 0) {
+          const localPoint = globeMesh.worldToLocal(intersects[0].point.clone());
+          const { lat, lon } = vector3ToLatLon(localPoint);
+          const hitFeature = geoFeatures.find(f => pointInGeoJSON(lon, lat, f));
+
+          if (hitFeature) {
+            const hitIsoCode = hitFeature.id;
+            const countryInfo = getCountryInfo(hitIsoCode, hitFeature.properties?.name);
+            onSelectLocation({
+              ...countryInfo,
+              lat: countryInfo.lat !== undefined ? countryInfo.lat : lat,
+              lon: countryInfo.lon !== undefined ? countryInfo.lon : lon,
+            });
+          }
+        }
+      }
+    }
+
+    function createMarkers() {
+      const container = document.getElementById("markers-container");
+      container.innerHTML = "";
+      markers = [];
+
+      LOCATIONS.forEach(loc => {
+        const pos = latLonToVector3(loc.lat, loc.lon, GLOBE_RADIUS + 0.05);
+
+        const el = document.createElement("div");
+        el.className = "globe-marker flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold shadow-xl backdrop-blur-md border";
+        
+        if (loc.category === "country") {
+          el.classList.add("bg-slate-900/90", "text-slate-100", "border-blue-400/60");
+          el.innerHTML = `<span class="text-xs">${loc.flag}</span><span class="text-blue-200">${loc.countryName}</span>`;
+        } else {
+          el.classList.add("bg-blue-900/80", "text-cyan-200", "border-cyan-400/40");
+          el.innerHTML = `<span class="text-xs">🌊</span><span>${loc.countryName}</span>`;
+        }
+
+        el.addEventListener("mouseenter", () => {
+          if (loc.isoCode) {
+            hoveredIsoCode = loc.isoCode;
+            drawHighlightTexture(loc.isoCode, loc.isoCode === selectedIsoCode);
+          }
+        });
+        el.addEventListener("mouseleave", () => {
+          if (loc.isoCode !== selectedIsoCode) {
+            hoveredIsoCode = null;
+            drawHighlightTexture(selectedIsoCode, true);
+          }
+        });
+        el.addEventListener("click", (e) => {
+          e.stopPropagation();
+          if (!isDraggingGlobe) onSelectLocation(loc);
+        });
+
+        container.appendChild(el);
+        markers.push({ element: el, position: pos, data: loc });
+      });
+    }
+
+    function updateMarkersPosition() {
+      camera.getWorldPosition(cameraWorldPos);
+      globeGroup.updateMatrixWorld();
+
+      const halfW = window.innerWidth * 0.5;
+      const halfH = window.innerHeight * 0.5;
+
+      markers.forEach(m => {
+        if (activeFilter !== "all" && m.data.category !== activeFilter) {
+          m.element.style.display = "none";
+          return;
+        }
+
+        tempVec.copy(m.position).applyMatrix4(globeGroup.matrixWorld);
+        const dot = tempVec.clone().normalize().dot(cameraWorldPos.clone().normalize());
+
+        if (dot < 0.22) {
+          m.element.style.display = "none";
+          return;
+        }
+
+        tempVec.project(camera);
+        const x = (tempVec.x * halfW) + halfW;
+        const y = -(tempVec.y * halfH) + halfH;
+
+        m.element.style.display = "flex";
+        m.element.style.transform = `translate3d(${x}px, ${y}px, 0) translate(-50%, -100%)`;
+        m.element.style.zIndex = Math.floor((1 - tempVec.z) * 1000);
+      });
+    }
+
+    function focusLocation(lat, lon) {
+      const targetLocalVec = latLonToVector3(lat, lon, 1).normalize();
+      const desiredWorldVec = new THREE.Vector3(0, 0, 1);
+
+      const startQ = globeGroup.quaternion.clone();
+      const targetQ = new THREE.Quaternion().setFromUnitVectors(targetLocalVec, desiredWorldVec);
+
+      const startZoom = camera.position.z;
+      const targetZoom = 12;
+
+      const startTime = performance.now();
+      const duration = 850;
+      isFocusingAnimation = true;
+
+      function step(currentTime) {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const easeProgress = 0.5 - Math.cos(progress * Math.PI) / 2;
+
+        globeGroup.quaternion.slerpQuaternions(startQ, targetQ, easeProgress);
+        camera.position.z = THREE.MathUtils.lerp(startZoom, targetZoom, easeProgress);
+
+        if (progress < 1) requestAnimationFrame(step);
+        else isFocusingAnimation = false;
+      }
+      requestAnimationFrame(step);
+    }
+
+    function restoreZoom(targetZ) {
+      if (targetZ === null || targetZ === undefined) return;
+      const startZ = camera.position.z;
+      const startTime = performance.now();
+      const duration = 650;
+      isFocusingAnimation = true;
+
+      function step(currentTime) {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const easeProgress = 0.5 - Math.cos(progress * Math.PI) / 2;
+
+        camera.position.z = THREE.MathUtils.lerp(startZ, targetZ, easeProgress);
+
+        if (progress < 1) requestAnimationFrame(step);
+        else isFocusingAnimation = false;
+      }
+      requestAnimationFrame(step);
+    }
+
+    function onSelectLocation(item) {
+      const panel = document.getElementById("infoPanel");
+      const isPanelClosed = panel.classList.contains("translate-y-full");
+
+      if (isPanelClosed || preSelectionCamZ === null) {
+        preSelectionCamZ = camera.position.z;
+      }
+
+      selectedIsoCode = item.isoCode;
+      drawHighlightTexture(item.isoCode, true);
+      focusLocation(item.lat, item.lon);
+      renderInfoPanel(item);
+      openInfoPanelUI();
+    }
+
+    // ==========================================
+    // 3. MEMO MODAL & DB SYNC CONTROLS
+    // ==========================================
+    function openMemoModal(isoCode) {
+      currentEditingIsoCode = isoCode || selectedIsoCode;
+      if (!currentEditingIsoCode) return;
+
+      const info = getCountryInfo(currentEditingIsoCode);
+      document.getElementById("memoModalTitle").innerText = `📝 ${info.countryName} 메모`;
+
+      const memoInput = document.getElementById("memoInput");
+      const deleteBtn = document.getElementById("deleteMemoBtn");
+
+      memoInput.value = "";
+      deleteBtn.classList.add("hidden");
+
+      const savedMemo = getMemoForCountry(currentEditingIsoCode);
+      if (savedMemo && savedMemo.text) {
+        memoInput.value = savedMemo.text;
+        deleteBtn.classList.remove("hidden");
+      }
+
+      const modal = document.getElementById("memoModal");
+      modal.classList.remove("hidden");
+
+      if (!history.state || !history.state.memoOpen) {
+        history.pushState({ memoOpen: true, isoCode: currentEditingIsoCode }, "");
+      }
+    }
+
+    function closeMemoModal(fromHistory = false) {
+      const modal = document.getElementById("memoModal");
+      modal.classList.add("hidden");
+
+      if (!fromHistory && history.state && history.state.memoOpen) {
+        history.back();
+      }
+      currentEditingIsoCode = null;
+    }
+
+    function saveMemo() {
+      if (!currentEditingIsoCode) return;
+      const text = document.getElementById("memoInput").value.trim();
+
+      if (!text) {
+        deleteMemo();
+        return;
+      }
+
+      const memoData = saveMemoForCountry(currentEditingIsoCode, text);
+      showToast("메모가 기기 DB에 저장되었습니다.");
+      closeMemoModal();
+
+      if (selectedIsoCode === currentEditingIsoCode) {
+        updateMemoUIInPanel(currentEditingIsoCode, memoData);
+      }
+    }
+
+    function deleteMemo() {
+      if (!currentEditingIsoCode) return;
+      deleteMemoForCountry(currentEditingIsoCode);
+      showToast("메모가 삭제되었습니다.");
+      closeMemoModal();
+
+      if (selectedIsoCode === currentEditingIsoCode) {
+        updateMemoUIInPanel(currentEditingIsoCode, null);
+      }
+    }
+
+    function updateMemoUIInPanel(isoCode, memoData) {
+      const box = document.getElementById(`countryMemoBox_${isoCode}`);
+      const btnText = document.getElementById(`memoBtnText_${isoCode}`);
+      if (!box) return;
+
+      if (memoData && memoData.text) {
+        document.getElementById(`memoContent_${isoCode}`).innerText = memoData.text;
+        document.getElementById(`memoDate_${isoCode}`).innerText = memoData.updatedAt || "";
+        box.classList.remove("hidden");
+        if (btnText) btnText.innerText = "메모 수정";
+      } else {
+        box.classList.add("hidden");
+        if (btnText) btnText.innerText = "메모 작성";
+      }
+    }
+
+    // DB 파일 백업 / 복원 (JSON 내보내기 및 올리기)
+    function openDbModal() {
+      document.getElementById("dbModal").classList.remove("hidden");
+      if (!history.state || !history.state.dbOpen) {
+        history.pushState({ dbOpen: true }, "");
+      }
+    }
+
+    function closeDbModal(fromHistory = false) {
+      document.getElementById("dbModal").classList.add("hidden");
+      if (!fromHistory && history.state && history.state.dbOpen) {
+        history.back();
+      }
+    }
+
+    function downloadMemoDB() {
+      const memos = loadAllMemos();
+      const jsonStr = JSON.stringify(memos, null, 2);
+      const blob = new Blob([jsonStr], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `globe_memos_backup_${new Date().toISOString().slice(0,10)}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      showToast("DB 파일이 다운로드되었습니다.");
+    }
+
+    function uploadMemoDB(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const importedObj = JSON.parse(e.target.result);
+          if (typeof importedObj === "object" && importedObj !== null) {
+            saveAllMemos(importedObj);
+            showToast("DB 파일을 성공적으로 올렸습니다!");
+            closeDbModal();
+            if (selectedIsoCode) {
+              const memo = getMemoForCountry(selectedIsoCode);
+              updateMemoUIInPanel(selectedIsoCode, memo);
+            }
+          } else {
+            showToast("올바른 JSON DB 파일이 아닙니다.");
+          }
+        } catch (err) {
+          showToast("DB 파일 읽기 실패: " + err.message);
+        }
+      };
+      reader.readAsText(file);
+      event.target.value = "";
+    }
+
+    // ==========================================
+    // 4. UI MODAL & NAVIGATION
+    // ==========================================
+    function renderInfoPanel(item) {
+      const content = document.getElementById("panelContent");
+
+      let landmarksHTML = "";
+      if (item.landmarks && item.landmarks.length > 0) {
+        landmarksHTML = `
+          <div class="space-y-2 mt-3">
+            <h4 class="text-xs font-bold text-blue-400 uppercase tracking-wider flex items-center gap-1.5">
+              <span>🏔️ 유명 대표 자연 지형 및 명소</span>
+            </h4>
+            <div class="grid grid-cols-1 gap-2">
+              ${item.landmarks.map(lm => `
+                <div class="p-3 rounded-xl bg-slate-900/90 border border-slate-800 flex flex-col gap-1">
+                  <div class="flex items-center justify-between">
+                    <span class="text-xs font-bold text-amber-300">${lm.name}</span>
+                    <span class="text-[10px] px-2 py-0.5 rounded-full bg-slate-800 text-slate-400">${lm.type}</span>
+                  </div>
+                  <p class="text-xs text-slate-300 leading-relaxed">${lm.desc}</p>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      }
+
+      content.innerHTML = `
+        <div class="flex items-start justify-between gap-2">
+          <div class="flex items-center gap-3">
+            <span class="text-4xl shadow-sm">${item.flag}</span>
+            <div>
+              <div class="flex items-center gap-2">
+                <h2 class="text-lg font-bold text-white leading-tight">${item.countryName}</h2>
+              </div>
+              <p class="text-xs text-slate-300 mt-1 flex items-center gap-1.5">
+                <span class="px-2 py-0.5 rounded-md bg-amber-500/20 text-amber-300 border border-amber-500/30 font-semibold">🏛️ 수도: ${item.capital}</span>
+                <span class="text-slate-400">| 🌍 ${item.continent}</span>
+              </p>
+            </div>
+          </div>
+          
+          <div class="flex flex-col gap-1.5 items-end">
+            <button onclick="openMemoModal('${item.isoCode}')" title="메모하기" class="px-3 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 text-xs font-bold flex items-center gap-1.5 active:scale-95 transition-all shadow-md">
+              <i class="fa-solid fa-pen-to-square"></i> <span id="memoBtnText_${item.isoCode}">메모 작성</span>
+            </button>
+            <button onclick="focusLocation(${item.lat}, ${item.lon})" title="초점 맞추기" class="px-3 py-1 rounded-xl bg-blue-600/30 hover:bg-blue-600/50 text-blue-300 border border-blue-500/30 text-[11px] font-semibold flex items-center gap-1 active:scale-95 transition-all">
+              <i class="fa-solid fa-crosshairs"></i> 이동
+            </button>
+          </div>
+        </div>
+
+        <div id="countryMemoBox_${item.isoCode}" class="hidden p-3.5 rounded-2xl bg-amber-950/40 border border-amber-500/40 text-xs space-y-1 shadow-inner">
+          <div class="flex items-center justify-between text-[11px] font-bold text-amber-400 border-b border-amber-500/20 pb-1.5 mb-1.5">
+            <span class="flex items-center gap-1"><i class="fa-solid fa-note-sticky"></i> 작성된 메모</span>
+            <span class="text-[10px] text-amber-400/80 font-normal" id="memoDate_${item.isoCode}"></span>
+          </div>
+          <p id="memoContent_${item.isoCode}" class="text-slate-200 whitespace-pre-wrap leading-relaxed text-xs"></p>
+        </div>
+
+        <div class="p-3.5 rounded-2xl bg-slate-900/60 border border-slate-800/80">
+          <p class="text-xs text-slate-300 leading-relaxed">${item.description}</p>
+        </div>
+
+        ${landmarksHTML}
+      `;
+
+      const memo = getMemoForCountry(item.isoCode);
+      if (memo) {
+        updateMemoUIInPanel(item.isoCode, memo);
+      }
+    }
+
+    function openInfoPanelUI() {
+      const panel = document.getElementById("infoPanel");
+      panel.classList.remove("translate-y-full");
+
+      if (!history.state || !history.state.panelOpen) {
+        history.pushState({ panelOpen: true }, "");
+      }
+    }
+
+    function closeInfoPanel(fromHistory = false) {
+      const panel = document.getElementById("infoPanel");
+      panel.classList.add("translate-y-full");
+
+      if (!fromHistory && history.state && history.state.panelOpen) {
+        history.back();
+      }
+
+      if (preSelectionCamZ !== null) {
+        restoreZoom(preSelectionCamZ);
+        preSelectionCamZ = null;
+      }
+
+      selectedIsoCode = null;
+      hoveredIsoCode = null;
+      drawHighlightTexture(null, false);
+    }
+
+    window.addEventListener("popstate", () => {
+      const dbModal = document.getElementById("dbModal");
+      if (dbModal && !dbModal.classList.contains("hidden")) {
+        closeDbModal(true);
+        return;
+      }
+
+      const memoModal = document.getElementById("memoModal");
+      if (memoModal && !memoModal.classList.contains("hidden")) {
+        closeMemoModal(true);
+        return;
+      }
+
+      const panel = document.getElementById("infoPanel");
+      if (panel && !panel.classList.contains("translate-y-full")) {
+        closeInfoPanel(true);
+      }
+    });
+
+    function setFilter(category) {
+      activeFilter = category;
+      document.querySelectorAll(".filter-btn").forEach(btn => {
+        btn.classList.remove("bg-blue-600", "text-white", "border-blue-400/30");
+        btn.classList.add("bg-slate-800/80", "text-slate-300", "border-slate-700");
+      });
+
+      const activeBtn = document.getElementById(`filter-${category}`);
+      if (activeBtn) {
+        activeBtn.classList.remove("bg-slate-800/80", "text-slate-300", "border-slate-700");
+        activeBtn.classList.add("bg-blue-600", "text-white", "border-blue-400/30");
+      }
+
+      showToast(`필터: ${category === 'all' ? '전체' : category === 'country' ? '국가/수도' : category === 'landmark' ? '명산/강/호수' : '대양/바다'}`);
+    }
+
+    function resetCameraView() {
+      const kr = isoToLocMap.get("KOR");
+      if (kr) onSelectLocation(kr);
+      showToast("대한민국 위치로 이동했습니다.");
+    }
+
+    function toggleAutoRotate() {
+      isAutoRotate = !isAutoRotate;
+      const btn = document.getElementById("btn-autorotate");
+      if (isAutoRotate) {
+        btn.classList.add("bg-blue-600", "text-white");
+        showToast("지구본 자동 회전 ON");
+      } else {
+        btn.classList.remove("bg-blue-600", "text-white");
+        showToast("지구본 자동 회전 OFF");
+      }
+    }
+
+    function toggleDayNight() {
+      isDayMode = !isDayMode;
+      const btn = document.getElementById("btn-daynight");
+      if (isDayMode) {
+        dirLight.intensity = 1.2;
+        ambientLight.intensity = 0.75;
+        btn.innerHTML = `<i class="fa-solid fa-sun text-base text-amber-400"></i>`;
+        showToast("낮 조명 모드");
+      } else {
+        dirLight.intensity = 0.4;
+        ambientLight.intensity = 0.2;
+        btn.innerHTML = `<i class="fa-solid fa-moon text-base text-indigo-300"></i>`;
+        showToast("야간 조명 모드");
+      }
+    }
+
+    function zoomGlobe(delta) {
+      camera.position.z = THREE.MathUtils.clamp(camera.position.z - delta * 2, 6.2, 25);
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById("toast");
+      toast.innerText = msg;
+      toast.classList.remove("opacity-0");
+      toast.classList.add("opacity-100");
+
+      setTimeout(() => {
+        toast.classList.remove("opacity-100");
+        toast.classList.add("opacity-0");
+      }, 2000);
+    }
+
+    const searchInput = document.getElementById("searchInput");
+    const searchResults = document.getElementById("searchResults");
+
+    searchInput.addEventListener("input", (e) => {
+      const query = e.target.value.trim().toLowerCase();
+      if (!query) {
+        searchResults.classList.add("hidden");
+        return;
+      }
+
+      const allSearchable = [];
+      LOCATIONS.forEach(loc => allSearchable.push(loc));
+
+      Object.keys(GLOBAL_COUNTRY_MAP).forEach(iso => {
+        const item = GLOBAL_COUNTRY_MAP[iso];
+        if (!allSearchable.some(x => x.isoCode === iso)) {
+          allSearchable.push({
+            id: iso.toLowerCase(),
+            isoCode: iso,
+            countryName: item.countryName,
+            name: item.countryName,
+            category: "country",
+            flag: item.flag || "🏳️",
+            capital: item.capital || item.countryName,
+            lat: item.lat || 0,
+            lon: item.lon || 0,
+            continent: item.continent || "지구 대륙",
+            description: item.description || `${item.countryName} 영역입니다.`
+          });
+        }
+      });
+
+      const matches = allSearchable.filter(loc => 
+        (loc.countryName && loc.countryName.toLowerCase().includes(query)) ||
+        (loc.name && loc.name.toLowerCase().includes(query)) ||
+        (loc.capital && loc.capital.toLowerCase().includes(query)) ||
+        (loc.isoCode && loc.isoCode.toLowerCase().includes(query)) ||
+        (loc.landmarks && loc.landmarks.some(lm => lm.name.toLowerCase().includes(query)))
+      ).slice(0, 15);
+
+      if (matches.length === 0) {
+        searchResults.innerHTML = `<div class="p-3 text-xs text-slate-400 text-center">검색 결과가 없습니다.</div>`;
+      } else {
+        searchResults.innerHTML = matches.map(loc => `
+          <div onclick="selectSearchResult('${loc.isoCode || loc.id}')" class="p-2.5 px-3 hover:bg-slate-800 cursor-pointer flex items-center justify-between text-xs">
+            <div class="flex items-center gap-2">
+              <span>${loc.flag || '🏳️'}</span>
+              <span class="font-bold text-slate-200">${loc.countryName}</span>
+            </div>
+            <span class="text-[10px] text-amber-300">${loc.capital.split(' ')[0]}</span>
+          </div>
+        `).join('');
+      }
+
+      searchResults.classList.remove("hidden");
+    });
+
+    function selectSearchResult(key) {
+      let item = isoToLocMap.get(key) || locationMap.get(key);
+      if (!item && GLOBAL_COUNTRY_MAP[key]) {
+        const g = GLOBAL_COUNTRY_MAP[key];
+        item = {
+          id: key.toLowerCase(),
+          isoCode: key,
+          countryName: g.countryName,
+          name: g.countryName,
+          category: "country",
+          flag: g.flag || "🏳️",
+          capital: g.capital,
+          lat: g.lat || 0,
+          lon: g.lon || 0,
+          continent: g.continent || "지구 대륙",
+          description: g.description || `${g.countryName} 영역입니다.`
+        };
+      }
+      if (item) {
+        onSelectLocation(item);
+        searchInput.value = "";
+        searchResults.classList.add("hidden");
+      }
+    }
+
+    document.addEventListener("click", (e) => {
+      if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
+        searchResults.classList.add("hidden");
+      }
+    });
+
+    function onWindowResize() {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    }
+
+    function animate() {
+      requestAnimationFrame(animate);
+
+      if (!isFocusingAnimation) {
+        if (!isPointerDown) {
+          if (isAutoRotate) currentRotationVelocity.x = 0.0015;
+
+          if (Math.abs(currentRotationVelocity.x) > 0.00005 || Math.abs(currentRotationVelocity.y) > 0.00005) {
+            applyGlobeRotation(currentRotationVelocity.x, currentRotationVelocity.y);
+            currentRotationVelocity.x *= 0.92;
+            currentRotationVelocity.y *= 0.92;
+          }
+        }
+      }
+
+      if (atmosphereMesh) atmosphereMesh.rotation.y += 0.0005;
+
+      updateMarkersPosition();
+      renderer.render(scene, camera);
+    }
+
+    window.focusLocation = focusLocation;
+    window.closeInfoPanel = closeInfoPanel;
+    window.setFilter = setFilter;
+    window.resetCameraView = resetCameraView;
+    window.toggleAutoRotate = toggleAutoRotate;
+    window.toggleBorders = toggleBorders;
+    window.toggleDayNight = toggleDayNight;
+    window.zoomGlobe = zoomGlobe;
+    window.selectSearchResult = selectSearchResult;
+    window.openMemoModal = openMemoModal;
+    window.closeMemoModal = closeMemoModal;
+    window.saveMemo = saveMemo;
+    window.deleteMemo = deleteMemo;
+    window.openDbModal = openDbModal;
+    window.closeDbModal = closeDbModal;
+    window.downloadMemoDB = downloadMemoDB;
+    window.uploadMemoDB = uploadMemoDB;
+
+    window.onload = function() {
+      init3D();
+    };
+  </script>
+</body>
+</html>
